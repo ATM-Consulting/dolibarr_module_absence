@@ -430,7 +430,7 @@ function mailConges(&$absence,$presence=false, $TPieceJointe = array()){
                                         ,'date_fin'=>php2dmy($absence->date_fin)
                                         ,'libelle'=>htmlentities($absence->libelle, ENT_COMPAT | ENT_HTML401, 'UTF-8')
                                         ,'libelleEtat'=>htmlentities($absence->libelleEtat, ENT_COMPAT | ENT_HTML401, 'UTF-8')
-					,'commentaireValideur'=>utf8_encode($absence->commentaireValideur)
+					,'commentaireValideur'=>utf8_encode(empty($absence->commentaireValideur) ? $_REQUEST['commentaireValideur'] : $absence->commentaireValideur)
 				)
 				,'translate' => array(
 					'Hello' => $langs->transnoentities('Hello'),
