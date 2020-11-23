@@ -545,3 +545,4 @@ CumulatedDayOffTakenNextYear=Jours RTT cumulés pris sur la période suivante
 NonCumulatedDayOffTakenNextYear=Jours RTT non cumulés pris sur la période suivante
 
 ABSENCE_TICKETSRESTO_COUNT_ABSENCE_AVALIDER=Tickets restaurant : prendre en compte les absences "A valider"
+PLANNING_DISPLAY_DRAFT_ABSENCE = Permettre de voir sur la vue planning les absences "à valider"

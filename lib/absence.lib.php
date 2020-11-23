@@ -1076,6 +1076,9 @@ function _planning(&$PDOdb, &$absence, $idGroupeRecherche, $idUserRecherche, $da
 						$TTotal[$dateJour]+=1;
 					}
 					else $subclass .= ' rouge';
+					if($ouinon->etat == 'Avalider'){
+						$subclass .= ' lighter';
+					}
 
 					if(!empty($class) || !empty($subclass)) $subclass.= ' classfortooltip';
 

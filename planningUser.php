@@ -231,14 +231,18 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 	}
 	
 	table.planning tr td.rouge{
-			background-color:#C03000;
+			background-color:#C03000 !important;
 	}
+    table.planning tr td.lighter{
+        background:url("./img/fond_hachure_01.png");
+        box-shadow: inset 0em 0em 0em 10em rgba(255, 255, 255, 0.3);
+    }
 	table.planning tr td.vert{
 		/*	background:url("./img/fond_hachure_01.png");*/
-			background-color:#86ce86;
+			background-color:#86ce86 !important;
 	}
 	table.planning tr td.rougeRTT {
-			background-color:#d87a00;
+			background-color:#d87a00 !important;
 	}
 	table.planning tr td.jourFerie {
 			background:none;

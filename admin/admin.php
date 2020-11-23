@@ -190,6 +190,15 @@ function showParameters(&$form, &$doliform) {
 			print '</td>';
 			print '</tr>';
 		}
+
+		print '<tr>';
+		print '<td>';
+		print $langs->trans('PLANNING_DISPLAY_DRAFT_ABSENCE');
+		print '</td>';
+		print '<td>';
+		print ajax_constantonoff('PLANNING_DISPLAY_DRAFT_ABSENCE');
+		print '</td>';
+		print '</tr>';
 		
 		print '<tr>';
 		print '<td>';

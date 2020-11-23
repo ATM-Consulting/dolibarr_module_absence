@@ -2811,7 +2811,7 @@ END:VCALENDAR
 			, 'statut' => 1
 			, 'etat' => array('Validee')
 		);
-		
+		if(!empty($conf->global->PLANNING_DISPLAY_DRAFT_ABSENCE)) $params['etat'][] = 'Avalider';
 		if (!empty($extra_params)) $params = array_merge($params, $extra_params);
 
 		if (!empty($conf->global->ABSENCE_FILTER_ON_LDAP_ENTITY_LOGIN)) $params['extrafields']['ue.ldap_entity_login'] = $conf->entity;
@@ -2836,6 +2836,7 @@ END:VCALENDAR
 			$TabAbsence[$row->fk_user][$k]['colorId']=$row->colorId;
 			$TabAbsence[$row->fk_user][$k]['commentaire']=$row->commentaire;
 			$TabAbsence[$row->fk_user][$k]['idAbsence']=$row->rowid;
+			$TabAbsence[$row->fk_user][$k]['etat']=$row->etat;
 
 			$k++;
 		}
@@ -2983,6 +2984,7 @@ END:VCALENDAR
 						$moment->label = $tabAbs['type'];
 						$moment->description = $tabAbs['commentaire'];
 						$moment->colorId = $tabAbs['colorId'];
+						$moment->etat = $tabAbs['etat'];
 						$moment->date = date('Y-m-d', $time_debut_inc);
 
 						$moment->idAbsence = $tabAbs['idAbsence'];
