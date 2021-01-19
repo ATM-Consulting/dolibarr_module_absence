@@ -231,8 +231,8 @@
 				};
 
 				if (commentaireValideur = window.prompt('[translate.ConfirmRefuseAbsenceRequest;strconv=no]')){
-
-					var link = '?action=refuse&id=[absenceCourante.id]&commentaireValideur='+commentaireValideur+dontSendMail;
+					
+					var link = '?action=refuse&id=[absenceCourante.id]&commentaireValideur='+commentaireValideur+(typeof dontSendMail !== 'undefined' ? dontSendMail : '');
 					document.location.href=link;
 
 				};

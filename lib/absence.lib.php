@@ -430,7 +430,7 @@ function mailConges(&$absence,$presence=false, $TPieceJointe = array()){
                                         ,'date_fin'=>php2dmy($absence->date_fin)
                                         ,'libelle'=>htmlentities($absence->libelle, ENT_COMPAT | ENT_HTML401, 'UTF-8')
                                         ,'libelleEtat'=>htmlentities($absence->libelleEtat, ENT_COMPAT | ENT_HTML401, 'UTF-8')
-					,'commentaireValideur'=>utf8_encode($absence->commentaireValideur)
+					,'commentaireValideur'=>utf8_encode(empty($absence->commentaireValideur) ? $_REQUEST['commentaireValideur'] : $absence->commentaireValideur)
 				)
 				,'translate' => array(
 					'Hello' => $langs->transnoentities('Hello'),
@@ -1243,8 +1243,9 @@ function saveAbsence(TPDOdb &$PDOdb, TRH_Absence &$absence)
 			$operateur = '+';
 			if(intval($TDuree[0]) < 0 || strpos($TDuree[0], '-') !== false) $operateur = '-';
 			$dureeSingle = convertTime2Seconds(abs(intval($TDuree[0])), intval($TDuree[1]), 0) / 60;
-
+			if($operateur == '-') $absence->set_date('date_hourStart', date("Y-m-d 23:59:59", strtotime($absence->date_hourStart)));
 			$absence->set_date('date_hourEnd', date("Y-m-d H:i:s", strtotime($operateur.$dureeSingle.' minutes', $absence->date_hourStart)));
+
 //		var_dump($operateur.$dureeSingle, date("Y-m-d H:i", $absence->date_hourStart), date("Y-m-d H:i", $absence->date_hourEnd)); return false;
 		}
 		else if(!empty($conf->global->ABSENCE_SHOW_PRESENCE_BY_PERIOD)) {

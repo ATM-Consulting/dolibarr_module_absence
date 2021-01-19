@@ -1786,7 +1786,20 @@ class TRH_Absence extends TObjetStd {
 
 					//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_congesCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
 
-					$compteur->add($PDOdb, $this->type, array(-$this->congesPrisNM1, -$this->congesPrisN), 'Refus ou suppression congé');
+					$nb_prisNM1 = $this->congesPrisNM1;
+					$nb_prisN = $this->congesPrisN;
+					$date_fin_periode_precedente = strtotime(date('Y-m-d', $compteur->date_congesCloture).' - 1 year');
+					$date_fin_periode_actuelle = $compteur->date_congesCloture;
+
+					// Si l'absence est complètement présente sur la période précédente, le plus simple est de ne pas toucher le compteur, sinon :
+					if($this->date_fin > $date_fin_periode_precedente) { 
+						if($this->date_fin <= $date_fin_periode_actuelle && $this->congesPrisN > 0) {
+							if(!empty($conf->global->ABSENCE_REPORT_CONGE)) $nb_prisNM1 += $nb_prisN;
+							else $nb_prisNM1 = $nb_prisN;
+                                                        $nb_prisN = 0;
+						}
+						$compteur->add($PDOdb, $this->type, array(-$nb_prisNM1, -$nb_prisN), 'Refus ou suppression congé');
+					}
 
 				break;
 

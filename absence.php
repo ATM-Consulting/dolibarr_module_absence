@@ -311,6 +311,8 @@ function _listeAdmin(&$PDOdb, &$absence) {
 	global $langs, $conf, $db, $user, $hookmanager;
 	$hookmanager->initHooks(array('agefoddsessionlist'));
 	llxHeader('', $langs->trans('ListeAllAbsences'));
+	$limit = GETPOST('limit');
+	if(empty($limit)) $limit = 30;
 	print dol_get_fiche_head(absencePrepareHead($absence, '')  , '', $langs->trans('Absence'));
 	//getStandartJS();
 
@@ -353,7 +355,7 @@ function _listeAdmin(&$PDOdb, &$absence) {
     $listParam = array(
         'limit' => array(
             'page' => $page,
-            'nbLine' => '30',
+            'nbLine' => $limit,
             'global' => 1000
         ),
         'link' => array(
