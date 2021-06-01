@@ -59,7 +59,7 @@ class modAbsence extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = $langs->trans('ModuleAbsenceDesc');
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.3.6';
+		$this->version = '1.3.7';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -565,6 +565,7 @@ class modAbsence extends DolibarrModules
                     'url'=> '/absence/absenceGroup.php',
                     'langs'=> 'absence@absence',    // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
                     'position'=> 103,
+		    'enabled'=>'1',
                     'perms'=> '$user->rights->absence->myactions->CanDeclareAbsenceForGroup',           // Use 'perms'=>'$user->rights->mymodule->level1->level2' if you want your menu with a permission rules
         		    'user'=> 2
         );
