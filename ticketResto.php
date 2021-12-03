@@ -49,7 +49,7 @@ function _generate_ticket_resto(&$ATMdb, $Tab, $type = 'standard') {
 
                 if($row['nbTicket'] > 0) {
 					print "VM"
-					.str_pad((int)substr($row['matricule'],3) ,10, ' ')
+					.str_pad((int)substr($row['matricule'],4) ,10, ' ')
 					."255"
 					.str_pad("CL06",10,' ')
 					.str_pad( number_format( $row['nbTicket'], 4, ',','' ),12,' ', STR_PAD_LEFT)."\r\n";
