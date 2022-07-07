@@ -532,14 +532,14 @@ class TRH_Absence extends TObjetStd {
 	    $totalConges = 0;
 	    if(!empty($TAbs[$fk_user])) {
             foreach($TAbs[$fk_user] as $dt => $abs) {
-                if(! empty($abs['absence']) && $abs['estUnJourTravaille'] === 'OUI') {
+                if(! empty($abs['absence']) && ($abs['estUnJourTravaille'] === 'OUI' || $abs['estUnJourTravaille'] === 'AM'|| $abs['estUnJourTravaille'] === 'PM')) {
                     if(count($abs['typeAbsence']) > 1) {
                         foreach($abs['typeAbsence'] as $typeAbs) {
                             if(in_array($typeAbs->typeAbs, TRH_Absence::$TAbsenceTypeDecompteConges)) $totalConges += 0.5;
                         }
                     }
                     else if(count($abs['typeAbsence']) == 1 && (in_array($abs['typeAbsence'][0]->typeAbs, TRH_Absence::$TAbsenceTypeDecompteConges))) {
-                        if($abs['typeAbsence'][0]->ddMoment == $abs['typeAbsence'][0]->dfMoment) $totalConges += 0.5;
+                        if($abs['typeAbsence'][0]->ddMoment == $abs['typeAbsence'][0]->dfMoment || $abs['estUnJourTravaille'] === 'AM'|| $abs['estUnJourTravaille'] === 'PM') $totalConges += 0.5;
                         else $totalConges++;
                     }
                 }
