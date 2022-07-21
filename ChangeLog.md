@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+
+
+## 2.1
+
 - FIX : Compatibilité v16  *10/06/2022* - 2.1.1
 - NEW : Deprecated Option in a special setup place  *21/07/2022* - 2.1.0
 
