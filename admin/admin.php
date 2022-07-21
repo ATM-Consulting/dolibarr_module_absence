@@ -79,6 +79,7 @@ showParameters($form, $doliform);
 function showParameters(&$form, &$doliform) {
 	global $db,$conf,$langs;
 
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 	$form=new TFormCore;
 	$TConst=array(
@@ -99,6 +100,7 @@ function showParameters(&$form, &$doliform) {
 
 	?><form action="<?php echo $_SERVER['PHP_SELF'] ?>" name="load-<?php echo $typeDoc ?>" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="action" value="save" />
+		<input type="hidden" name="token" value="'<?php $newToken?>'">
 	<table width="100%" class="noborder" style="background-color: #fff;">
 		<tr class="liste_titre">
 			<td colspan="2"><?php echo $langs->trans('Parameters') ?></td>
