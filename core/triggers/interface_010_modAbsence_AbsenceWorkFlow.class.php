@@ -11,7 +11,7 @@
  *	\class      InterfaceValideurWorkflow
  *  \brief      Class of triggered functions for ndfp module
  */
-class InterfaceAbsenceWorkflow
+class InterfaceAbsenceWorkflow extends DolibarrTriggers
 {
     var $db;
     var $error;
@@ -63,6 +63,9 @@ class InterfaceAbsenceWorkflow
         elseif ($this->version) return $this->version;
         else return $langs->trans("Unknown");
     }
+    public function runTrigger($action, $object, User $user, Translate $langs, Conf $conf) {
+       return  $this->run_trigger($action, $object, $user, $langs, $conf);
+    }
 
     /**
      *      Function called when a Dolibarrr business event is done.
@@ -75,7 +78,7 @@ class InterfaceAbsenceWorkflow
      *      @param      conf        Object conf
      *      @return     int         <0 if KO, 0 if no action are done, >0 if OK
      */
-    function run_trigger($action, &$object, $user, $langs, $conf)
+    function run_trigger($action, &$object, User $user, Translate $langs, Conf $conf)
     {
         global $db,$conf,$langs;
 
@@ -284,8 +287,6 @@ class InterfaceAbsenceWorkflow
 
 		return 0;
     }
-
-
 
 
 }
