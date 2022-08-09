@@ -63,7 +63,7 @@ class modAbsence extends DolibarrModules
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
 
-		$this->version = '2.1.1';
+		$this->version = '2.1.2';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -71,7 +71,7 @@ class modAbsence extends DolibarrModules
 		// Name of image file used for this module.
 		// If file is in theme/yourtheme/img directory under name object_pictovalue.png, use this->picto='pictovalue'
 		// If file is in module/img directory under name object_pictovalue.png, use this->picto='pictovalue@module'
-		$this->picto='absence@absence';
+		$this->picto='absence.svg@absence';
 
 		// Defined all module parts (triggers, login, substitutions, menus, css, etc...)
 		// for default path (eg: /mymodule/core/xxxxx) (0=disable, 1=enable)
