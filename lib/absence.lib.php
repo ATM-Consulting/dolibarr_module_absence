@@ -904,6 +904,14 @@ function _planning(&$PDOdb, &$absence, $idGroupeRecherche, $idUserRecherche, $da
 
 	$isValideur =  TRH_valideur_groupe::isValideur($PDOdb, $user->id, $idGroupeRecherche);
 
+	$TJoursFeries = TRH_JoursFeries::getAll($PDOdb);
+
+	$TDatesJoursFeries=array();
+	foreach ($TJoursFeries as $jourFerie) {
+		$TDatesJoursFeries[] = $jourFerie->date_jourOff;
+	}
+
+
 	foreach($tabUserMisEnForme as $idUser => $planning){
 
 		if(empty($TCacheUser[$idUser])) {
@@ -925,7 +933,15 @@ function _planning(&$PDOdb, &$absence, $idGroupeRecherche, $idUserRecherche, $da
 
 			$std = new TObjetStd;
 			$std->set_date('date_jour', $dateJour);
-			if (TRH_JoursFeries::estFerie($PDOdb, $std->get_date('date_jour','Y-m-d') )) { $isFerie = 1; $class .= ' jourFerie';  } else { $isFerie = 0; }
+
+
+//			if (TRH_JoursFeries::estFerie($PDOdb, $std->get_date('date_jour','Y-m-d') )) { $isFerie = 1; $class .= ' jourFerie';  } else { $isFerie = 0; }
+			if(in_array($std->get_date('date_jour','Y-m-d'), $TDatesJoursFeries)) {
+				$isFerie = 1;
+				$class .= ' jourFerie';
+			} else {
+				$isFerie = 0;
+			}
 
 			$estUnJourTravaille = TRH_EmploiTemps::estTravaille($PDOdb, $idUser, $std->get_date('date_jour','Y-m-d')); // OUI/NON/AM/PM
 			$classTravail= ' jourTravaille'.$estUnJourTravaille;
