@@ -345,7 +345,7 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
 				,'idUser'=>$compteur->fk_user
 				,'date_congesCloture'=>(!empty($user->rights->absence->myactions->update_date_cloture)) ? $form->calendrier('', 'date_congesCloture', $compteur->date_congesCloture) : date("d/m/Y",$compteur->date_congesCloture)
 				,'nombreCongesAcquisMensuel'=>$form->texte('','nombreCongesAcquisMensuel',round2Virgule($compteur->nombreCongesAcquisMensuel),10,50,'')
-				,'nombreCongesAcquisAnnuel'=>$form->texte('','nombreCongesAcquisAnnuel',round2Virgule($compteur->nombrecongesAcquisAnnuel),10,50,'')
+				,'nombrecongesAcquisAnnuel'=>$form->texte('','nombrecongesAcquisAnnuel',round2Virgule($compteur->nombrecongesAcquisAnnuel),10,50,'')
 
 				,'titreConges'=>load_fiche_titre($langs->trans('HolidaysPaid'),'', 'title.png', 0, '')
                 , 'remainingBefore' => $congeRemainingBefore

@@ -65,7 +65,7 @@ if (!isset($_REQUEST['force_http']))
 		$date_congesCloture->setTime(0, 0, 0); // H:i:s => 00:00:00
 		
 		// Bascule UNIQUEMENT si le lendemain de ma date de cloture est égale à la date d'exécution du script (pas de <= pour éviter les bascules intempestives en cours d'année si un compteur est mal init)
-		if($date_congesCloture->getTimestamp() === $now->getTimestamp() || isset($_REQUEST['force_bascule']))
+		if($date_congesCloture->format("Y-m-d H:i:s") === $now->format("Y-m-d H:i:s") || isset($_REQUEST['force_bascule']))
 		{
 			if (isset($_REQUEST['force_bascule'])) echo '---- BASCULE force_bascule<br />'."\n";
 			else echo '---- BASCULE<br />'."\n";

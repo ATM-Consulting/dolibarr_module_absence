@@ -89,7 +89,6 @@ function showParameters(&$form, &$doliform) {
 		,'RH_JOURS_NON_TRAVAILLE'
 		,'RH_MONTANT_TICKET_RESTO'
 		,'RH_PART_PATRON_TICKET_RESTO'
-		,'RH_NDF_TICKET_RESTO'
 		,'RH_CODEPRODUIT_TICKET_RESTO'
 		,'RH_CODECLIENT_TICKET_RESTO'
 		,'TIMESHEET_WORKING_HOUR_PER_DAY'
@@ -113,6 +112,29 @@ function showParameters(&$form, &$doliform) {
 		</tr><?php
 
 		}
+
+		// on récupère les ID, les codes et les labels du dictionnaire des types de dépenses de NDF de l’entité
+		$resql = $db->query(
+			'SELECT rowid, code, label FROM ' . MAIN_DB_PREFIX . 'c_exp'
+			. ' WHERE active = 1 AND entity IN (' . getEntity('') . ')'
+		);
+		if ($resql) {
+			$TExpenseTypeOption = array('<option value="">–</option>');
+			while ($obj = $db->fetch_object($resql)) {
+				$selected = $obj->rowid == $conf->global->RH_NDF_TICKET_RESTO ? ' selected ' : '';
+				$TExpenseTypeOption[] = '<option value="'. $obj->rowid .'" ' . $selected . '>'. $obj->code . ' - ' . $langs->trans($obj->label) .'</option>';
+			}
+			echo '<tr>'
+				 . '<td>' . $langs->trans('RH_NDF_TICKET_RESTO') . '</td>'
+				 . '<td><select id="RH_NDF_TICKET_RESTO" name="TConst[RH_NDF_TICKET_RESTO]">'
+				 . implode('', $TExpenseTypeOption)
+				 . '</select>'
+				 . '</td>'
+				 . '</tr>';
+		} else {
+			setEventMessages('', array('<pre>' . $db->lastquery() . '</pre>', $db->lasterror()), 'errors');
+		}
+
 		print '<tr>';
 		print '<td>';
 		print $langs->trans('absenceTicketRestoOnUserCreate');

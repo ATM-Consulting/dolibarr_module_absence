@@ -4,17 +4,17 @@ set_time_limit(0);
 	require('config.php');
 	dol_include_once('/absence/class/absence.class.php');
 	dol_include_once('/absence/class/ticket.class.php');
-	
+
 	dol_include_once('/absence/lib/absence.lib.php');
-	
+
 	$langs->load('absence@absence');
-	
+
 	$ATMdb=new TPDOdb;
 	$absence=new TRH_Absence;
 
 	switch(__get('action')) {
 		case 'GEN_TR' :
-		
+
 			if(isset($_POST['Archive'])) {
 				_archive_ticket_resto($ATMdb, $_POST['TTicket']);
 			}
@@ -22,21 +22,21 @@ set_time_limit(0);
 				_generate_ticket_resto($ATMdb, $_POST['TTicket'],'primoclic');
 			}
 			else{
-				_generate_ticket_resto($ATMdb, $_POST['TTicket']);	
+				_generate_ticket_resto($ATMdb, $_POST['TTicket']);
 			}
 			break;
 	}
 
 	_planningResult($ATMdb,$absence, 'edit');
-	
+
 	$ATMdb->close();
-	
+
 	llxFooter();
-	
+
 function _generate_ticket_resto(&$ATMdb, $Tab, $type = 'standard') {
 	global $conf, $langs;
-	
-	
+
+
 	if(isset($_REQUEST['bt_sage'])) {
 		header('Content-type: application/octet-stream');
 	    header('Content-Disposition: attachment; filename=TicketResto-'.date('Y-m-d-h-i-s').'.txt');
@@ -44,7 +44,7 @@ function _generate_ticket_resto(&$ATMdb, $Tab, $type = 'standard') {
 
 		// Pour l'export SAGE il faut pas le rajouter ce caractère
 		//if (!empty($conf->global->DYNAMICRH_ADD_BOM)) print "\xEF\xBB\xBF";
-		
+
 		foreach($Tab as $fk_user=>$row) {
 
                 if($row['nbTicket'] > 0) {
@@ -61,9 +61,9 @@ function _generate_ticket_resto(&$ATMdb, $Tab, $type = 'standard') {
 		header('Content-type: application/octet-stream');
 	    header('Content-Disposition: attachment; filename=TicketResto-'.date('Y-m-d-h-i-s').'.csv');
 	    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		
+
 		if (!empty($conf->global->DYNAMICRH_ADD_BOM)) print "\xEF\xBB\xBF";
-		
+
 		if($type != 'primoclic'){
 			print $langs->trans('ProductCode') . ';' . $langs->trans('ClientCode') . ';' . $langs->trans('DeliveryPoint') . ';';
 			print $langs->trans('Level') . ' 1;' . $langs->trans('Level') . ' 2;' . $langs->trans('Matricule') . ';' . $langs->transnoentities('EmployeeName') . ';';
@@ -76,11 +76,11 @@ function _generate_ticket_resto(&$ATMdb, $Tab, $type = 'standard') {
 			print html_entity_decode($langs->trans('EmployeeName')).';'.$langs->trans('Matricule').';'.$langs->trans('NbTitle').';'.$langs->trans('FacialValueInCents').';';
 			print $langs->trans('DeliveryPoint').';'.$langs->trans('Libelle').";\n";
 		}
-		
+
 		foreach($Tab as $fk_user=>$row) {
-			
+
 			if($row['nbTicket'] > 0) {
-				
+
 				if($type != 'primoclic'){
 					print implode(';',array(
 						$conf->global->RH_CODEPRODUIT_TICKET_RESTO
@@ -113,46 +113,46 @@ function _generate_ticket_resto(&$ATMdb, $Tab, $type = 'standard') {
 						,$row['cp']." ".$row['ville']
 					))."\n";
 				}
-				
+
 			}
-				
-			
+
+
 		}
 	}
 	//50;;;;;;;O/N;O/N;700;350;;??;;;O/N;O/N;*/
 	exit;
 }
-	
+
 function _archive_ticket_resto(&$ATMdb, $Tab) {
 	global $conf, $langs;
-	
+
 	foreach($Tab as $fk_user=>$row) {
 		$t=new TRH_TicketResto;
-		
+
 		$t->loadByUserDate($ATMdb, $fk_user, date('Y-m-d', Tools::get_time( $row['date_distribution'] )) );
-		
+
 		$t->set_values($row);
 		$t->fk_user=$fk_user;
-		
+
 		$t->montant=$conf->global->RH_MONTANT_TICKET_RESTO;
 		$t->partpatron=($conf->global->RH_MONTANT_TICKET_RESTO * ($conf->global->RH_PART_PATRON_TICKET_RESTO / 100) );
 		$t->entity = $conf->entity;
-		
+
 		$t->code_produit = $conf->global->RH_CODEPRODUIT_TICKET_RESTO;
 		$t->code_client = $conf->global->RH_CODECLIENT_TICKET_RESTO;
-		
+
 		$t->save($ATMdb);
 	}
 
 	setEventMessage($langs->trans('SendingArchivedTicket'));
 }
-		
+
 function _planningResult(&$ATMdb, &$absence, $mode) {
-	global $langs, $conf, $db, $user;	
+	global $langs, $conf, $db, $user;
 	llxHeader('', $langs->trans('Summary'));
 	print dol_get_fiche_head(adminRecherchePrepareHead($absence, '')  , '', $langs->trans('Schedule'));
 
-	
+
 	$form=new TFormCore($_SERVER['PHP_SELF'],'formPlanning','GET');
 	$form->Set_typeaff($mode);
 	/*echo $form->hidden('fk_user', $user->id);
@@ -162,15 +162,15 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 	$date_fin=strtotime('+7day');
 	$idGroupeRecherche=0;
 	$idUserRecherche=0;
-	
+
 	if(isset($_REQUEST['groupe'])) $idGroupeRecherche=$_REQUEST['idGroupeRecherche'];
 	if(isset($_REQUEST['date_debut'])) $date_debut=$_REQUEST['date_debut'];
 	if(isset($_REQUEST['date_fin'])) $date_fin=$_REQUEST['date_fin'];
 	if(isset($_REQUEST['fk_user'])) $idUserRecherche=$_REQUEST['fk_user'];
 
 	$idGroupeRecherche=$_REQUEST['groupe'];
-	
-	
+
+
 	if($idGroupeRecherche!=0){	//	on recherche le nom du groupe
 		$sql="SELECT nom FROM ".MAIN_DB_PREFIX."usergroup
 		WHERE rowid =".$idGroupeRecherche;
@@ -189,9 +189,9 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 	while($ATMdb->Get_line()) {
 		$TGroupe[$ATMdb->Get_field('rowid')] = $ATMdb->Get_field('nom');
 	}
-	
+
 	$TUser=array('Tous');
-	$sql=" SELECT DISTINCT u.rowid, u.lastname, u.firstname 
+	$sql=" SELECT DISTINCT u.rowid, u.lastname, u.firstname
 			FROM ".MAIN_DB_PREFIX."user as u LEFT JOIN ".MAIN_DB_PREFIX."usergroup_user as ug ON (u.rowid=ug.fk_user)
 			";
 	$sql.= ' WHERE u.statut = 1 AND (u.firstname != "" OR u.lastname != "")';
@@ -205,9 +205,9 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 	while($ATMdb->Get_line()) {
 		$TUser[$ATMdb->Get_field('rowid')]=ucwords(strtolower($ATMdb->Get_field('lastname')))." ".$ATMdb->Get_field('firstname');
 	}
-	
+
 	$TStatPlanning=array();
-	
+
 	$TBS=new TTemplateTBS();
 	print $TBS->render('./tpl/ticketresto.tpl.php'
 		,array(
@@ -217,7 +217,7 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 				'TGroupe'=>$form->combo('','groupe',$TGroupe,$idGroupeRecherche)
 				,'btValider'=>$form->btsubmit($langs->trans('Submit'), 'valider')
 				,'TUser'=>$form->combo('','fk_user',$TUser,$idUserRecherche)
-				
+
 				,'date_debut'=> $form->calendrier('', 'date_debut', $date_debut, 12)
 				,'date_fin'=> $form->calendrier('', 'date_fin', $date_fin, 12)
 				,'titreRecherche'=>load_fiche_titre($langs->trans('RestaurantTicketsExport'),'', 'title.png', 0, '')
@@ -241,14 +241,14 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 				'Or' => $langs->trans('Or'),
 				'User' => $langs->trans('User')
 			)
-		)	
+		)
 	);
-	
-	
-	
+
+
+
 	?>
 	<div id="plannings" style="background-color:#fff">
-		
+
 	<style type="text/css">
 
 	table.planning tr td.jourTravailleNON {
@@ -263,18 +263,18 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 
 	table.planning {
 		border-collapse:collapse; border:1px solid #ccc; font-size:9px;
-	}		
+	}
 	table.planning td {
 		border:1px solid #ccc;
-	}	
-	
+	}
+
 	table.planning tr:nth-child(even) {
 		background: #ddd;
 	}
 	table.planning tr:nth-child(odd) {
 		background: #fff;
 	}
-	
+
 	table.planning tr td.rouge{
 			background-color:#C03000;
 	}
@@ -285,59 +285,59 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 			background:none;
 			background-color:#666;
 	}
-	
-			
+
+
 	</style>
-	
+
 	<?php
-	
+
 	echo $form->end_form();
-	
+
 	switch(__get('action')) {
-		
+
 		case 'HISTORY':
 			_show_history($ATMdb, __get('fk_user'));
-			
+
 			break;
 		default:
-			_ticket($ATMdb);			
+			_ticket($ATMdb);
 	}
-	
-	
-	
+
+
+
 	?></div>
-	
-	
+
+
 	<?php
-	
+
 	global $mesg, $error;
 	dol_htmloutput_mesg($mesg, '', ($error ? 'error' : 'ok'));
 	llxFooter();
-	
-}	
+
+}
 
 function _ticket(&$ATMdb) {
-	global $db,$conf, $langs;	
-	
+	global $db,$conf, $langs;
+
 	$form=new TFormCore('auto', 'formTR', 'POST');
 	echo $form->hidden('action', 'GEN_TR');
-	
+
 	if(__get('date_debut')=='') return false;
-	
+
 	$t_debut = Tools::get_time( __get('date_debut',0 ));
 	$t_fin = Tools::get_time( __get('date_fin',0 ));
-	
+
 	$date_debut = date('Y-m-d', $t_debut);
 	$date_fin = date('Y-m-d', $t_fin);
-	
+
 	if($t_debut<0) return false;
-	
+
 	print "Du ".date('d/m/Y', $t_debut)." au ".date('d/m/Y', $t_fin);
-	
-	
+
+
 	print '<table class="planning" border="0">';
 	print '<tr class="entete">';
-	
+
 	$idGroup = __get('groupe', 0, 'int');
 
 	$TTicketResto = TRH_TicketResto::getTicketFor($ATMdb, $date_debut, $date_fin, $idGroup, __get('fk_user', 0, 'int'));
@@ -350,44 +350,44 @@ function _ticket(&$ATMdb) {
 
 	$group = new UserGroup($db);
 	$group->fetch($idGroup);
-	
+
 	$code_fact = '';
-	
+
 	if(!empty($group->array_options['options_tr_raison_sociale'])) {
 		$rs =  $group->array_options['options_tr_raison_sociale'];
 		$address = $group->array_options['options_tr_address'];
 		$cp = $group->array_options['options_tr_zip'];
 		$ville = $group->array_options['options_tr_town'];
-	
-		
+
+
 		$pointlivraison = $group->array_options['options_tr_point_livraison'];
 		$code_client = $group->array_options['options_tr_code_client'];
 	}
 	else if(!empty($group->note)) {
-		
+
 		$var = explode("\n", $group->note);
-		
+
 		$rs =  $var[0];
 		$address = $var[1];
 		$cp = $var[2];
 		$ville = $var[3];
-	
-		
+
+
 		$pointlivraison = $var[4];
 		$code_client = $var[5];
 	}
 	else{
-		
+
 		$rs =  $conf->global->MAIN_INFO_SOCIETE_NOM;
 		$address =  $conf->global->MAIN_INFO_SOCIETE_ADDRESS;
 		$cp = $conf->global->MAIN_INFO_SOCIETE_ZIP;
 		$ville = $conf->global->MAIN_INFO_SOCIETE_TOWN;
-	
+
 		$code_client='';
 		$code_fact = $conf->global->DYNAMICRH_TR_CODEFACT;
 	}
-	
-	
+
+
 	$autoPL = false;
 	if(empty($pointlivraison)) {
 		$pointlivraison= $rs.' '.$address.' '.$cp.' '.$ville;
@@ -402,9 +402,9 @@ function _ticket(&$ATMdb) {
 		$u=new User($db);
 		$u->fetch($idUser);
 		$u->fetch_optionals($u->id, $optionsArray);
-		
+
 		if($first) {
-			
+
 			?><tr>
 				<td><?php echo $langs->trans('EmployeeName'); ?></td>
 				<td><?php echo $langs->trans('PresenceCompleteDay'); ?></td>
@@ -430,23 +430,23 @@ function _ticket(&$ATMdb) {
 						$('[rel=delivery]').val( $(this).val() );
 					});
 				});
-				
+
 			</script>
-			
-			<?php 
-			
+
+			<?php
+
 			$first = false;
 		}
-		
+
 		?><tr>
 		<td nowrap="nowrap"><?php echo $form->texte('', 'TTicket['.$idUser.'][name]', $u->getFullName($langs), 20,255)
-			.'<a href="?action=HISTORY&fk_user='.$idUser.'">'.img_picto($langs->trans('SeeUserPreviousSendings'), 'history.png').'</a>';  
+			.'<a href="?action=HISTORY&fk_user='.$idUser.'">'.img_picto($langs->trans('SeeUserPreviousSendings'), 'history.png').'</a>';
 		?></td><?php
-		
+
 		if($u->array_options['options_ticketresto_ok']==1) {
-			
+
 			if(!empty($u->array_options['options_ticketresto_pointlivraison'])) $pointlivraison = $u->array_options['options_ticketresto_pointlivraison'];
-			
+
 			?><td align="right"><?php echo $stat['presence'] ?></td>
 			<td align="right"><?php echo $stat['ndf'] ?></td>
 			<td align="right"><?php echo !empty($stat['ndf_suspicious']) ? '<strong style="color:red;" class="classfortooltip" title="'.implode(', ', $stat['TRefSuspisious']).'">'.$stat['ndf_suspicious'].'</strong>' : '' ?></td>
@@ -466,27 +466,27 @@ function _ticket(&$ATMdb) {
 			<?php
 
 		} else {
-			
+
 			?>
 			<td colspan="16"><?php echo $langs->trans('UserNotSelectedTickets'); ?></td>
 			<?php
-				
+
 		}
-		
+
 		?>
 		</tr>
 		<?php
-	
+
 	}
 
 	?></table><br /><?php
-	
+
 	echo $form->btsubmit($langs->trans('GenerateFile'), 'Generer');
 	echo $form->btsubmit('Générer le fichier Sage', 'bt_sage');
 	echo $form->btsubmit($langs->trans('GenerateFilePrimoclic'), 'GenererPrimoclic');
 	echo $langs->trans('Then');
 	echo $form->btsubmit($langs->trans('ArchiveThisSending'), 'Archive');
-	
+
 	$form->end();
 
 }
@@ -495,23 +495,23 @@ function _show_history(&$ATMdb, $fk_user) {
 	global $db, $conf, $langs;
 
 	$THistory = TRH_TicketResto::getHistory($ATMdb, $fk_user);
-	
+
 	$u=new User($db);
 	$u->fetch($fk_user);
 	print $u->getNomUrl(1);
-	
-	
+
+
 	print '<table class="planning" border="0">';
 	print '<tr class="entete">';
-	
+
 	$first=true;
 
 	$TON = array('O'=> $langs->trans('Yes'), 'N'=> $langs->trans('No'));
 
 	foreach($THistory as $t) {
-		
+
 		if($first) {
-			
+
 			?><tr>
 				<td><?php echo $langs->trans('NbTitle'); ?></td>
 				<td><?php echo $langs->trans('DeliveryPoint'); ?></td>
@@ -526,13 +526,13 @@ function _show_history(&$ATMdb, $fk_user) {
 				<td><?php echo $langs->trans('CompanyNameOnBook'); ?></td>
 				<td><?php echo $langs->trans('PostalCodeAndCityOnBook'); ?></td>
 				<td><?php echo $langs->trans('DeliveryDate'); ?></td>
-			</tr><?php 
-			
+			</tr><?php
+
 			$first = false;
 		}
-		
+
 		?><td align="right"><?php echo $t->nbTicket ?></td>
-		
+
 		<td align="right"><?php echo  $t->pointlivraison ?></td>
 		<td align="right"><?php echo  $t->niveau1 ?></td>
 		<td align="right"><?php echo  $t->niveau2 ?></td>
@@ -549,10 +549,10 @@ function _show_history(&$ATMdb, $fk_user) {
 		<?php
 
 	}
-	
+
 
 	?></table><br /><?php
-	
-	
+
+
 }
 

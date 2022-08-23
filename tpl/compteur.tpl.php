@@ -97,7 +97,7 @@
 [onshow;block=end]
 				<tr>
 					<td>[translate.NbDaysAcquiredByYear;strconv=no;protect=no]</td>
-					<td> [congesCourant.nombreCongesAcquisAnnuel;strconv=no;protect=no]</td>
+					<td> [congesCourant.nombrecongesAcquisAnnuel;strconv=no;protect=no]</td>
 				</tr>
 
 
