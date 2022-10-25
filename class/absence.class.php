@@ -161,8 +161,19 @@ class TRH_Compteur extends TObjetStd {
 
 
 	function save(&$db) {
-		global $conf;
+		global $conf, $user;
 		$this->entity = $conf->entity;
+
+		//HERE : sauvegarde de la donnée
+		require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+		if (! dol_is_dir(DOL_DATA_ROOT)) dol_mkdir(DOL_DATA_ROOT);
+
+		$txt = file_get_contents(DOL_DATA_ROOT."/logsfile.txt");
+		$txt .= "\n-- SAVE -- ".date('d-m-Y h:i:s', dol_now())." - ". $user ."\n";
+		$txt .= "RTT Cumulé Total actuel : " . $this->rttCumuleTotal . "\n";
+		$txt .= "RTT Cumulé Acquis : " . $this->rttCumuleAcquis . "\n";
+		$txt .= "RTT Cumulé Reporté N - 1 : " . $this->rttCumuleReportNM1 . "\n";
+		$txt .= "RTT Cumulé Pris : " . $this->rttCumulePris . "\n";
 
 		$this->rttCumuleTotal=$this->rttCumuleAcquis+$this->rttCumuleReportNM1-$this->rttCumulePris;
 		$this->rttNonCumuleTotal=$this->rttNonCumuleAcquis+$this->rttNonCumuleReportNM1-$this->rttNonCumulePris;
@@ -171,6 +182,11 @@ class TRH_Compteur extends TObjetStd {
 
 		parent::save($db);
 
+		$txt .= "RTT Cumulé Total après calcul : " . $this->rttCumuleTotal . "\n";
+		$logsfile = fopen(DOL_DATA_ROOT."/logsfile.txt", "w") or die("Unable to open file!");
+		fwrite($logsfile, $txt);
+		fclose($logsfile);
+
 		$this->updateDolibarr(4, $this->rttCumuleTotal + $this->rttNonCumuleTotal);
 		$this->updateDolibarr(5, $this->congePrecReste);
 
@@ -178,7 +194,7 @@ class TRH_Compteur extends TObjetStd {
 	}
 
 	function initCompteur(&$PDOdb, $idUser){
-		global $conf;
+		global $conf, $user;
 		$this->entity = $conf->entity;
 		$annee=date('Y');
 		$anneePrec=$annee-1;
@@ -200,6 +216,15 @@ class TRH_Compteur extends TObjetStd {
 		$this->rttAcquisMensuelInit=!empty($conf->global->RH_NB_RTT_MENSUEL) ? $conf->global->RH_NB_RTT_MENSUEL : 0;
 		$this->rttAcquisAnnuelCumuleInit=!empty($conf->global->RH_NB_RTT_ANNUEL) ? $conf->global->RH_NB_RTT_ANNUEL : 0;
 		$this->rttAcquisAnnuelNonCumuleInit=!empty($conf->global->RH_NB_RTTNC_ANNUEL) ? $conf->global->RH_NB_RTTNC_ANNUEL : 0;
+
+		//HERE : initialisation du compteur lors de la création d'un user notamment
+
+		$txt = file_get_contents(DOL_DATA_ROOT."/logsfile.txt");
+		$txt .= "\n-- INIT COMPTEUR -- ".date('d-m-Y h:i:s', dol_now())." - ". $user ."\n";
+		$txt .= "RTT Cumulé Total actuel : " . $this->rttCumuleTotal . "\n";
+		$txt .= "RTT Cumulé Acquis : " . $this->rttCumuleAcquis . "\n";
+		$txt .= "RTT Cumulé Reporté N - 1 : " . $this->rttCumuleReportNM1 . "\n";
+		$txt .= "RTT Cumulé Pris : " . $this->rttCumulePris . "\n";
 
 
 		$this->rttCumuleAcquis=0;
@@ -240,6 +265,12 @@ class TRH_Compteur extends TObjetStd {
 		$this->reportRtt=0;
 
 		$this->is_archive=0;
+
+		$txt .= "RTT Cumulé Total après calcul : " . $this->rttCumuleTotal . "\n";
+		$logsfile = fopen(DOL_DATA_ROOT."/logsfile.txt", "w") or die("Unable to open file!");
+		fwrite($logsfile, $txt);
+		fclose($logsfile);
+
 	}
 
 
@@ -332,11 +363,26 @@ class TRH_Compteur extends TObjetStd {
 	function load(&$PDOdb, $id, $loadChild = true) {
 
 		$res = parent::load($PDOdb, $id);
+		//HERE : load le cumule total
+
+		$txt = file_get_contents(DOL_DATA_ROOT."/logsfile.txt");
+		$txt .= "\n-- LOAD -- ".date('d-m-Y h:i:s', dol_now())." - ".$user."\n";
+		$txt .= "RTT Cumulé Total actuel : " . $this->rttCumuleTotal . "\n";
+		$txt .= "RTT Cumulé Acquis : " . $this->rttCumuleAcquis . "\n";
+		$txt .= "RTT Cumulé Reporté N - 1 : " . $this->rttCumuleReportNM1 . "\n";
+		$txt .= "RTT Cumulé Pris : " . $this->rttCumulePris . "\n";
+
 		$this->rttCumuleTotal=$this->rttCumuleAcquis+$this->rttCumuleReportNM1-$this->rttCumulePris;
 		$this->rttNonCumuleTotal=$this->rttNonCumuleAcquis+$this->rttNonCumuleReportNM1-$this->rttNonCumulePris;
 
 		$this->congePrecTotal=$this->acquisExerciceNM1 +$this->acquisAncienneteNM1+$this->acquisHorsPeriodeNM1+$this->reportCongesNM1;
 		$this->congePrecReste=$this->congePrecTotal-$this->congesPrisNM1;
+
+		$txt .= "RTT Cumulé Total après calcul : " . $this->rttCumuleTotal . "\n";
+		$logsfile = fopen(DOL_DATA_ROOT."/logsfile.txt", "w") or die("Unable to open file!");
+		fwrite($logsfile, $txt);
+		fclose($logsfile);
+
 
 		return $res;
 	}
@@ -356,14 +402,36 @@ class TRH_Compteur extends TObjetStd {
 	}
 
 	function add(&$PDOdb, $type, $duree, $motif) {
-        global $langs, $conf;
+        global $langs, $conf, $user;
 		if($type=='rttcumule'){
 			list($congesPrisNM1, $congesPrisN) = $duree;
 
 			$this->rttCumulePris+= $congesPrisNM1;
 			$this->rttCumulePrisN1+= $congesPrisN;
 
+			//HERE : retrait de RTT en fonction de congés pris ou supprimés
+			require_once(DOL_DOCUMENT_ROOT."/core/lib/files.lib.php");
+			if (! dol_is_dir(DOL_DATA_ROOT)) dol_mkdir(DOL_DATA_ROOT);
+
+			$txt = file_get_contents(DOL_DATA_ROOT."/logsfile.txt");
+			$txt .= "\n-- ADD (ajout ou suppression congés) -- ".date('d-m-Y h:i:s', dol_now())." - ". $user ."\n";
+			$txt .= "RTT Congés : " . $duree . "\n";
+			$txt .= "RTT Cumulé Acquis : " . $this->rttCumuleAcquis . "\n";
+			$txt .= "RTT Cumulé Acquis : " . $this->rttCumuleAcquis . "\n";
+			$txt .= "RTT Cumulé Reporté N - 1 : " . $this->rttCumuleReportNM1 . "\n";
+			$txt .= "RTT Cumulé Pris : " . $this->rttCumulePris . "\n";
+
+			$this->rttCumuleTotal=$this->rttCumuleAcquis+$this->rttCumuleReportNM1-$this->rttCumulePris;
+			$this->rttNonCumuleTotal=$this->rttNonCumuleAcquis+$this->rttNonCumuleReportNM1-$this->rttNonCumulePris;
+			$this->congePrecTotal=$this->acquisExerciceNM1 +$this->acquisAncienneteNM1+$this->acquisHorsPeriodeNM1+$this->reportCongesNM1;
+			$this->congePrecReste=$this->congePrecTotal-$this->congesPrisNM1;
+
 			$this->rttCumuleTotal -= $congesPrisNM1+ $congesPrisN;
+
+			$txt .= "RTT Cumulé Total après calcul : " . $this->rttCumuleTotal . "\n";
+			$logsfile = fopen(DOL_DATA_ROOT."/logsfile.txt", "w") or die("Unable to open file!");
+			fwrite($logsfile, $txt);
+			fclose($logsfile);
 
 			$this->save($PDOdb);
 
