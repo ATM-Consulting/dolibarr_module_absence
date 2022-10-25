@@ -47,9 +47,11 @@
 				$sql="UPDATE ".MAIN_DB_PREFIX."rh_compteur 
 					SET date_rttCloture='".date('Y-m-d h:i:s',$compteur->date_rttClotureInit)."'
 					, date_congesCloture='".date('Y-m-d h:i:s',$compteur->date_congesClotureInit)."'
-					WHERE 1 ";	
-					/*,nombreCongesAcquisMensuel=".$compteur->congesAcquisMensuelInit."
-					,nombrecongesAcquisAnnuel=".$compteur->congesAcquisAnnuelInit."*/
+					,nombreCongesAcquisMensuel=".$compteur->congesAcquisMensuelInit."
+					,nombrecongesAcquisAnnuel=".$compteur->congesAcquisAnnuelInit."
+					,rttAcquisAnnuelCumuleInit=".$compteur->rttCumuleInit."
+                                        ,rttAcquisAnnuelNonCumuleInit=".$compteur->rttNonCumuleInit."
+					WHERE 1 ";
 				if(!empty($conf->multicompany->enabled) && !empty($conf->multicompany->transverse_mode)) {
 					null;
 				}
