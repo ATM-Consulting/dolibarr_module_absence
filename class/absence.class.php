@@ -171,6 +171,7 @@ class TRH_Compteur extends TObjetStd {
 //		$usertarget = new User($db);
 //		$usertarget->fetch($this->fk_user);
 		if(file_exists(DOL_DATA_ROOT."/logsfile.txt"))  $txt = file_get_contents(DOL_DATA_ROOT."/logsfile.txt");
+		$rttCumuleTotalsave = $this->rttCumuleTotal;
 		$txt .= "\n-- SAVE -- ".date('d-m-Y h:i:s', dol_now())." - ". $user->login  ." - user concerné ".$this->fk_user."\n";
 		$txt .= "RTT Cumulé Total actuel : " . $this->rttCumuleTotal . "\n";
 		$txt .= "RTT Cumulé Acquis : " . $this->rttCumuleAcquis . "\n";
@@ -185,9 +186,12 @@ class TRH_Compteur extends TObjetStd {
 		parent::save($db);
 
 		$txt .= "RTT Cumulé Total après calcul : " . $this->rttCumuleTotal . "\n";
-		$logsfile = fopen(DOL_DATA_ROOT."/logsfile.txt", "w") or die("Unable to open file!");
-		fwrite($logsfile, $txt);
-		fclose($logsfile);
+
+		if($rttCumuleTotalsave != $this->rttCumuleTotal) {
+			$logsfile = fopen(DOL_DATA_ROOT . "/logsfile.txt", "w") or die("Unable to open file!");
+			fwrite($logsfile, $txt);
+			fclose($logsfile);
+		}
 
 		$this->updateDolibarr(4, $this->rttCumuleTotal + $this->rttNonCumuleTotal);
 		$this->updateDolibarr(5, $this->congePrecReste);
