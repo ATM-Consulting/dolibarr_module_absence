@@ -1093,22 +1093,21 @@ function _ficheCommentaire(&$PDOdb, &$absence, $mode) {
 	llxFooter();
 }
 
-function _getRowUserAlreadyAccepted(&$PDOdb, &$db, &$absence)
-{
+function _getRowUserAlreadyAccepted(&$PDOdb, &$db, &$absence) {
 	$TRes = array();
+	$fk_absence = $absence->getId();
+	if($fk_absence > 0) {
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'rh_valideur_object WHERE type IN ("ABS", "Conges") AND fk_object='.$fk_absence;
+		$PDOdb->Execute($sql);
 
-	$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'rh_valideur_object WHERE type IN ("ABS", "Conges") AND fk_object='.$absence->getId();
-	$PDOdb->Execute($sql);
-
-	while ($row = $PDOdb->Get_line())
-	{
-		$sql = 'SELECT lastname, firstname  FROM '.MAIN_DB_PREFIX.'user WHERE rowid = '.$row->fk_user;
-		$resql = $db->query($sql);
-		if ($resql && $db->num_rows($resql))
-		{
-            while($u = $db->fetch_object($resql)) $TRes[0]['html'] .= '<tr><td>'.date('d/m/Y', strtotime($row->date_cre)).'</td><td>'.trim($u->lastname.' '.$u->firstname).'</td></tr>';
-        }
-    }
+		while($row = $PDOdb->Get_line()) {
+			$sql = 'SELECT lastname, firstname  FROM '.MAIN_DB_PREFIX.'user WHERE rowid = '.$row->fk_user;
+			$resql = $db->query($sql);
+			if($resql && $db->num_rows($resql)) {
+				while($u = $db->fetch_object($resql)) $TRes[0]['html'] .= '<tr><td>'.date('d/m/Y', strtotime($row->date_cre)).'</td><td>'.trim($u->lastname.' '.$u->firstname).'</td></tr>';
+			}
+		}
+	}
 	return $TRes;
 }
 
