@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+
+
+## 2.1
+
+- FIX : Icon *09/08/2022* - 2.1.2
+- FIX : Compatibilité v16  *10/06/2022* - 2.1.1
+- NEW : Deprecated Option in a special setup place  *21/07/2022* - 2.1.0
+
 ## 2.0
 
 - FIX : Erreur valideur ayant déjà accepté lors de la création d'une nouvelle absence  - 28/10/2022 - 2.0.9
