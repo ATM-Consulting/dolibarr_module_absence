@@ -586,3 +586,8 @@ tovalid=à valider
 ABSENCE_BLOCK_RECUP_IF_COMPTEUR_TOO_LOW=Bloquer la pose d'absence de récupération si le compteur ne contient pas assez de jours par rapport à la durée de l'absence
 ABSENCE_TOTAL_CONGES_PRIS_POSES_NOT_EDITABLE=Bloquer l'édition du "Total congés pris et/ou posés" sur l'écran "Compteurs jours acquis"
 ABSENCE_SHOW_PRESENCE_BY_PERIOD=Lors d'un signalement de présence, pouvoir choisir une heure de début et de fin pour le matin et le soir
+
+
+AbsenceDeleted = L'absence à été supprimée
+AbsenceDeletingError = Une erreur c'est produite lors de la suppression de l'absence
+AbsenceDeletingDoNothing = Aucune suppression effectué, l'objet n'a pas été trouvé

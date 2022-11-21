@@ -69,13 +69,26 @@
 
                 dol_delete_dir_recursive($conf->absence->dir_output.'/'.dol_sanitizeFileName($absence->rowid), 0, 0, 1);
 
-				$absence->delete($PDOdb);
+				$resDel = $absence->delete($PDOdb);
+				if($resDel>0){
+					setEventMessage($langs->trans('AbsenceDeleted'));
 
-				?>
-				<script language="javascript">
-					document.location.href="?delete_ok=1";
-				</script>
-				<?php
+					if($absence->fk_user == $user->id) { // Si le collaborateur supprime sa demande d'absence on prévient les valideurs
+						header('Location:'.dol_buildpath('absence/absence.php',1));
+					}else{
+						header('Location:'.dol_buildpath('absence/absence.php',1).'?action=listeAdmin');
+					}
+					exit;
+				}elseif ($resDel<0){
+					setEventMessage($langs->trans('AbsenceDeletingError'), 'errors');
+					if(!empty($absence->errors)){ setEventMessage($absence->errors, 'errors'); }
+					header('Location:'.dol_buildpath('absence/absence.php',1).'?id='.$absence->id.'&action=view');
+					exit;
+				}else{
+					setEventMessage($langs->trans('AbsenceDeletingDoNothing'), 'warnings');
+					header('Location:'.dol_buildpath('absence/absence.php',1).'?id='.$absence->id.'&action=view');
+				}
+
 				break;
 
 			case 'accept':

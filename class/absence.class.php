@@ -642,20 +642,44 @@ class TRH_Absence extends TObjetStd {
 	    return $return;
 	}
 
+	/**
+	 * @param $PDOdb
+	 * @return int|void
+	 */
 	function delete(&$PDOdb)
 	{
 		global $db, $user,$langs,$conf;
-
-		$this->recrediterHeure($PDOdb);
 
 		dol_include_once('/valideur/class/valideur.class.php');
 		dol_include_once('/core/class/interfaces.class.php');
 
 		$interface = new Interfaces($db);
 		$result = $interface->run_triggers('ABSENCE_BEFOREDELETE',$this,$user,$langs,$conf);
+		if($result<0){
+			$this->errors[] = 'Error Absence trigger ABSENCE_BEFOREDELETE';
+			return -1;
+		}
 
-		TRH_valideur_object::deleteChildren($PDOdb, array('ABS', 'Conges'), $this->getId());
-		return parent::delete($PDOdb);
+		$deleteResult = TRH_valideur_object::deleteChildren($PDOdb, array('ABS', 'Conges'), $this->getId());
+		if($deleteResult === false ){
+			$this->errors[] = 'Error Absence Delete : TRH_valideur_object::deleteChildren';
+			return -1;
+		}
+
+		$resParent = parent::delete($PDOdb);
+		if($resParent<0){
+			return -1;
+		}
+
+		// Il faut recrediter seulement si aucunes erreurs
+		$reCreditResult = $this->recrediterHeure($PDOdb);
+		if($reCreditResult<0){
+			$this->errors[] = 'Error Absence::recrediterHeure()';
+
+			return -1;
+		}
+
+		return 1;
 	}
 
 	//renvoie le tableau des utilisateurs
@@ -1840,55 +1864,74 @@ class TRH_Absence extends TObjetStd {
 	}
 
 
-	//recrédite les heures au compteur lors de la suppression d'une absence
+	/**
+	 * recrédite les heures au compteur lors de la suppression d'une absence
+	 * @param $PDOdb
+	 * @return int -1 for error 0 for no action 1 for recredit ok
+	 */
 	function recrediterHeure(&$PDOdb){
-		global $conf, $user;
+		global $conf;
 		$this->entity = $conf->entity;
 
-		if($this->etat!='Refusee'){
+		$addResult = null;
 
-			$compteur=new TRH_Compteur;
-			$compteur->load_by_fkuser($PDOdb, $this->fk_user);
+		if($this->etat==='Refusee'){
+			return 0;
+		}
 
-			switch($this->type){
-				case "rttcumule" :
-					//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_rttCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
-					$compteur->add($PDOdb, $this->type, array(-$this->congesPrisNM1, -$this->congesPrisN), 'Refus rtt cumulé');
+		$compteur=new TRH_Compteur;
+		$compteur->load_by_fkuser($PDOdb, $this->fk_user);
 
+		switch($this->type){
+			case "rttcumule" :
+				//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_rttCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
+				$addResult = $compteur->add($PDOdb, $this->type, array(-$this->congesPrisNM1, -$this->congesPrisN), 'Refus rtt cumulé');
 				break;
-				case "rttnoncumule" :
-					//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_rttCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
-					$compteur->add($PDOdb, $this->type, array(-$this->congesPrisNM1, -$this->congesPrisN), 'Refus rtt non cumulé');
 
+			case "rttnoncumule" :
+				//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_rttCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
+				$addResult = $compteur->add($PDOdb, $this->type, array(-$this->congesPrisNM1, -$this->congesPrisN), 'Refus rtt non cumulé');
 				break;
-				case 'conges':
-				case 'cppartiel':
 
-					//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_congesCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
+			case 'conges':
+			case 'cppartiel':
 
-					$nb_prisNM1 = $this->congesPrisNM1;
-					$nb_prisN = $this->congesPrisN;
-					$date_fin_periode_precedente = strtotime(date('Y-m-d', $compteur->date_congesCloture).' - 1 year');
-					$date_fin_periode_actuelle = $compteur->date_congesCloture;
+				//$this->calculDureeAbsenceParAddition($PDOdb, $compteur->date_congesCloture); // commenté voir TK#10339 si une absence contient des jours fériés erronés (24 et 31 décembre par exemple) et que l'on supprime le(s) jour(s) férié(s) avant de supprimer l'absence, le nombre de jours pris est décrémenté de la durée de l'absence additionnée au nombre de jours fériés erronés supprimés.
 
-					// Si l'absence est complètement présente sur la période précédente, le plus simple est de ne pas toucher le compteur, sinon :
-					if($this->date_fin > $date_fin_periode_precedente) { 
-						if($this->date_fin <= $date_fin_periode_actuelle && $this->congesPrisN > 0) {
-							if(!empty($conf->global->ABSENCE_REPORT_CONGE)) $nb_prisNM1 += $nb_prisN;
-							else $nb_prisNM1 = $nb_prisN;
-                                                        $nb_prisN = 0;
+				$nb_prisNM1 = $this->congesPrisNM1;
+				$nb_prisN = $this->congesPrisN;
+				$date_fin_periode_precedente = strtotime(date('Y-m-d', $compteur->date_congesCloture).' - 1 year');
+				$date_fin_periode_actuelle = $compteur->date_congesCloture;
+
+				// Si l'absence est complètement présente sur la période précédente, le plus simple est de ne pas toucher le compteur, sinon :
+				if($this->date_fin > $date_fin_periode_precedente) {
+					if($this->date_fin <= $date_fin_periode_actuelle && $this->congesPrisN > 0) {
+						if(!empty($conf->global->ABSENCE_REPORT_CONGE)){
+							$nb_prisNM1 += $nb_prisN;
 						}
-						$compteur->add($PDOdb, $this->type, array(-$nb_prisNM1, -$nb_prisN), 'Refus ou suppression congé');
+						else {
+							$nb_prisNM1 = $nb_prisN;
+						}
+
+						$nb_prisN = 0;
 					}
 
+					$addResult = $compteur->add($PDOdb, $this->type, array(-$nb_prisNM1, -$nb_prisN), 'Refus ou suppression congé');
+				}
 				break;
 
-				case 'recup':
-					$compteur->add($PDOdb, $this->type, -$this->duree, 'Refus jour de récupération');
-
-					break;
-			}
+			case 'recup':
+				$addResult = $compteur->add($PDOdb, $this->type, -$this->duree, 'Refus jour de récupération');
+				break;
 		}
+
+		if($addResult === false){
+			return -1;
+		}elseif($addResult === true){
+			return 1;
+		}
+
+		return 0;
 	}
 
 

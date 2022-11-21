@@ -4,6 +4,7 @@
 
 ## 2.0
 
+- FIX : Missing error management - 21/11/2022 - 2.1.0
 - FIX : Déplacement de la ligne des compteurs : "Nombre de jour de récupération acquis" sur la partie N-1 - 13/12/2021 - 2.0.6
 - FIX : v13 compat (NOTOKENRENEWAL, NOCSRFCHECK) - 2021-07-07 - 2.0.5
 
