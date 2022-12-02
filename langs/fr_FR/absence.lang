@@ -591,3 +591,6 @@ ABSENCE_SHOW_PRESENCE_BY_PERIOD=Lors d'un signalement de présence, pouvoir choi
 AbsenceDeleted = L'absence à été supprimée
 AbsenceDeletingError = Une erreur c'est produite lors de la suppression de l'absence
 AbsenceDeletingDoNothing = Aucune suppression effectué, l'objet n'a pas été trouvé
+AbsAlreadyRefused = Absence déjà refusée
+AbsAlreadyValidated = Absence déjà acceptée
+CommentaireValideurAlreadyExist = Commentaire déjà saisi

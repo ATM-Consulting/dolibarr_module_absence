@@ -93,6 +93,15 @@
 
 			case 'accept':
 				$absence->load($PDOdb, $_REQUEST['id']);
+
+				// si le statut est déjà validé il faut s'abstenir
+				if($absence->etat=='Validee'){
+					setEventMessage($langs->trans('AbsAlreadyValidated'), 'errors');
+					header('Location:'.dol_buildpath('absence/absence.php',1).'?id='.$absence->id.'&action=showCommentForm');
+					exit;
+				}
+
+
 				$absence->valid($PDOdb);
 
 				$absence->load($PDOdb, $_REQUEST['id']);
@@ -121,8 +130,28 @@
 //
 //				_fiche($PDOdb, $absence,'view');
 //				break;
+			case 'showCommentForm':
+				$absence->load($PDOdb, $_REQUEST['id']);
 
+				// si le statut est déjà refusé il faut s'abstenir
+				if(!empty($absence->commentaireValideur)){
+					setEventMessage($langs->trans('CommentaireValideurAlreadyExist'), 'errors');
+					header('Location:'.dol_buildpath('absence/absence.php',1).'?id='.$absence->id.'&action=view');
+					exit;
+				}
+
+				_ficheCommentaire($PDOdb, $absence,'edit');
+
+				break;
 			case 'refuse':
+
+				// si le statut est déjà refusé il faut s'abstenir
+				if($absence->etat=='Refusee'){
+					setEventMessage($langs->trans('AbsAlreadyRefused'), 'errors');
+					header('Location:'.dol_buildpath('absence/absence.php',1).'?id='.$absence->id.'&action=showCommentForm');
+					exit;
+				}
+
 				$absence->load($PDOdb, $_REQUEST['id']);
 				/*$absence->recrediterHeure($PDOdb);
 				$absence->load($PDOdb, $_REQUEST['id']);
