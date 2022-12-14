@@ -606,6 +606,33 @@ class TRH_Absence extends TObjetStd {
 		$this->level = 1;
 	}
 
+	/**
+	 * @param TPDOdb $PDOdb
+	 * @param int $fk_user
+	 * @return false|obj
+	 */
+	static function getUserPeriodTotalNotValidatedConges(&$PDOdb, $fk_user) {
+
+		global $conf;
+
+		$sql = /** @lang MySQL */ 'SELECT SUM(congesPrisNM1) as SumCongesPrisNM1, SUM(congesPrisN) as SumCongesPrisN '
+				.' FROM '.MAIN_DB_PREFIX.'rh_absence  c  '
+				.' WHERE c.etat = \'Avalider\' AND c.fk_user = '.intval($fk_user).' AND c.entity = '.intval($conf->entity).' ';
+		$PDOdb->Execute($sql);
+
+		if($PDOdb->Execute($sql) && $PDOdb->Get_line()){
+
+			$obj = new stdClass();
+			$obj->SumCongesPrisNM1 = $PDOdb->Get_field('SumCongesPrisNM1');
+			$obj->SumCongesPrisN = $PDOdb->Get_field('SumCongesPrisN');
+
+			return $obj;
+		}
+
+		return false;
+	}
+
+
 	static function getUserPeriodTotalConges(&$PDOdb, $fk_user, $date_start, $date_end) {
 
         $TAbs =TRH_Absence::getPlanning($PDOdb,0, $fk_user, $date_start, $date_end);

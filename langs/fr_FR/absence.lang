@@ -594,3 +594,4 @@ AbsenceDeletingDoNothing = Aucune suppression effectué, l'objet n'a pas été t
 AbsAlreadyRefused = Absence déjà refusée
 AbsAlreadyValidated = Absence déjà acceptée
 CommentaireValideurAlreadyExist = Commentaire déjà saisi
+totalHolidaysWaitingValidation = Congés en attentes de validation

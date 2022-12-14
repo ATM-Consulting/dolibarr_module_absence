@@ -300,6 +300,12 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
     $dateEndPrisNM1 = date('Y-m-d');
     $totalCongesPrisNM1 = TRH_Absence::getUserPeriodTotalConges($PDOdb, $compteur->fk_user, $dateStartPrisNM1, $dateEndPrisNM1);
     $totalCongesPoseNM1 = TRH_Absence::getUserPeriodTotalConges($PDOdb, $compteur->fk_user, $dateStartPoseNM1, $dateEndPoseNM1);
+    $totalCongesWaiting = TRH_Absence::getUserPeriodTotalNotValidatedConges($PDOdb, $compteur->fk_user);
+
+	$totalCongesWaitingNM1 = '--';
+	if($totalCongesWaiting){
+		$totalCongesWaitingNM1 = round2Virgule($totalCongesWaiting->SumCongesPrisNM1);
+	}
 
     $morehtmlref.='<div class="refidno">';
     $morehtmlref.= $langs->trans('HolidaysTaken').' : <strong>'.round2Virgule($compteur->congesPrisNM1).'</strong> &nbsp;&nbsp;&nbsp;';
@@ -310,6 +316,9 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
     print dol_get_fiche_head(compteurPrepareHead($compteur, 'compteur',$userCourant->id, $userCourant->lastname, $userCourant->firstname)  , 'compteur', $langs->trans('Absence'));
     dol_banner_tab($userCourant, 'compteuruser', $morehtml='', 0, $fieldid='rowid', $fieldref='ref', $morehtmlref, $moreparam='', $nodbprefix=0, $morehtmlleft='', $morehtmlstatus='',1, $morehtmlright='');
     print '</div>'; // close dol_get_fiche_head
+
+
+
 
 	$TBS=new TTemplateTBS();
 	print $TBS->render('./tpl/compteur.tpl.php'
@@ -332,6 +341,8 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
 				,'dates'=>date('d/m', strtotime('+1day',$compteur->date_congesCloture) ).' au '.date('d/m', $compteur->date_congesCloture )
 				,'dateFin'=>date('d/m', $compteur->date_congesCloture )
 			    ,'title' => !empty($conf->global->RH_NMOIN1_LABEL) ? $conf->global->RH_NMOIN1_LABEL : $langs->trans('AbsenceNM1titre', date('Y'), date('Y', strtotime('-1year',time()) ) )
+
+				, 'totalHolidaysWaitingValidation' => $totalCongesWaitingNM1
 			)
 
 			,'congesCourant'=>array(
@@ -453,6 +464,7 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
 				'AbsenceN'=>$langs->transnoentities('AbsenceN'),
 				'totalHolidaysTakenNM1Future'=>$formStd->textwithpicto($langs->transnoentities('totalHolidaysTakenNM1Future'),$langs->transnoentities('pictoTotalCongesPoseNM1', date('d/m/Y',strtotime($dateStartPoseNM1)), date('d/m/Y',strtotime($dateEndPoseNM1)))),
 				'totalHolidaysTakenNM1Past'=>$formStd->textwithpicto($langs->transnoentities('totalHolidaysTakenNM1Past'),$langs->transnoentities('pictoTotalCongesPrisNM1', date('d/m/Y',strtotime($dateStartPrisNM1)), date('d/m/Y',strtotime($dateEndPrisNM1)))),
+				'totalHolidaysWaitingValidation'=>$langs->transnoentities('totalHolidaysWaitingValidation'),
 				'langs'=>$langs
 			)
 		)

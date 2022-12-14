@@ -44,6 +44,10 @@
                 <td>[translate.totalHolidaysTakenNM1Future;strconv=no;protect=no]</td>
                 <td>[congesPrec.totalCongesPoseNM1;strconv=no;protect=no]</td>
             </tr>
+			<tr>
+				<td>[translate.totalHolidaysWaitingValidation;strconv=no;protect=no]</td>
+				<td>[congesPrec.totalHolidaysWaitingValidation;strconv=no;protect=no]</td>
+			</tr>
 				<tr>
 					<td><b>[translate.HolidaysTaken;strconv=no;protect=no]</b></td>
 					<td><b>[congesPrec.congesPris;strconv=no;protect=no]</b></td>
