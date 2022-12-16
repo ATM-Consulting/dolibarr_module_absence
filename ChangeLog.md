@@ -4,6 +4,7 @@
 
 ## 2.0
 
+- FIX : token nécessaire pour supprimer - 16/12/2022 - 2.0.10
 - FIX : Erreur valideur ayant déjà accepté lors de la création d'une nouvelle absence  - 28/10/2022 - 2.0.9
 - FIX : Erreur sur les compteurs calculés pris et posés  - 06/07/2022 - 2.0.8
 - FIX : Restreindre l'accès à `adminConges.php` aux utilisateurs ayant la permission « Modifier les paramètres globaux des congés » - 23/05/2022 - 2.0.6
