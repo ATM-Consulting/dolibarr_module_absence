@@ -1023,6 +1023,7 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 				,'dontSendMail_CB' => '<input type="checkbox" name="dontSendMail" id="dontSendMail" value="1" />' // J'utilise pas $form->checkbox1('','dontSendMail', 1) parce que j'ai besoin que la ce soit toujours cochable meme en mode view pour les valideurs
 				,'autoValidatedAbsence' => (int)($form->type_aff == 'edit' &&  $user->rights->absence->myactions->CanDeclareAbsenceAutoValidated)
 				,'autoValidatedAbsenceChecked'=> ( !empty($user->rights->absence->myactions->voirToutesAbsencesListe) ? ' checked="checked" ':'')
+				,'token'=>function_exists('newToken') ? newToken() : $_SESSION['newtoken']
 			)
 			,'langs' => $langs
 		)
