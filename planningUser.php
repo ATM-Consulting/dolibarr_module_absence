@@ -186,9 +186,9 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 				,'titrePlanning'=>load_fiche_titre($langs->trans('CollabsSchedule'),'', 'title.png', 0, '')
 			)
 			,'userCourant'=>array(
-				'id'=>$fuser->id
-				,'nom'=>$fuser->lastname
-				,'prenom'=>$fuser->firstname
+				'id'=>$user->id
+				,'nom'=>$user->lastname
+				,'prenom'=>$user->firstname
 				,'droitRecherche'=>$user->rights->absence->myactions->rechercherAbsence?1:0
 			)
 			,'view'=>array(

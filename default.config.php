@@ -15,7 +15,7 @@
 		include($dir."main.inc.php");
 
 	} else {
-		global $dolibarr_main_db_host, $dolibarr_main_db_name, $dolibarr_main_db_user, $dolibarr_main_db_pass;
+		global $dolibarr_main_db_host, $dolibarr_main_db_name, $dolibarr_main_db_user, $dolibarr_main_db_pass, $dolibarr_main_db_type;
 	}
 
 	if(!defined('DB_HOST')) {

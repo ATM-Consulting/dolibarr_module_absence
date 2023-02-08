@@ -787,7 +787,7 @@ function _recap_abs(&$PDOdb, $idGroupeRecherche, $idUserRecherche, $date_debut, 
 }
 
 function getPlanningAbsence(&$PDOdb, &$absence, $idGroupeRecherche, $idUserRecherche) {
-global $conf,$db,$user;
+global $conf,$db,$user, $TStatPlanning;
 
 		$html='';
 

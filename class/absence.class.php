@@ -3010,7 +3010,7 @@ END:VCALENDAR
 			$TabLogin[$PDOdb->Get_field('rowid')]=$PDOdb->Get_field('firstname')." ".$PDOdb->Get_field('lastname');
 		}
 
-		if($conf->global->RH_PLANNING_SEARCH_MODE == 'INTERSECTION') {
+		if(!empty($conf->global->RH_PLANNING_SEARCH_MODE) && $conf->global->RH_PLANNING_SEARCH_MODE == 'INTERSECTION') {
 		// élimination des users non présent dans tous les groupes. AA peu opti mais je n'ai guère le choix si je veux pas refondre toutes la requête
 
 			foreach($TabLogin as $idUser=>$row) {
@@ -3418,7 +3418,7 @@ class TRH_EmploiTemps extends TObjetStd {
 		if(empty($TRHCacheUserDateEntree[$id_user])) {
 			$u =new User($db);
 			$u->fetch($id_user);
-
+			if(empty($u->array_options['options_DDA'])) $u->array_options['options_DDA'] = '';
 			$TRHCacheUserDateEntree[$id_user] = $u->array_options['options_DDA'];
 
 			if((float) DOL_VERSION >= 5)

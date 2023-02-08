@@ -63,10 +63,14 @@
 	
 	$p=new TRH_Absence;
 	$p->init_db_by_vars($ATMdb);
-	
 
-	$sqlReq="DELETE FROM ".MAIN_DB_PREFIX."rh_admin_compteur WHERE 1";
+	$sqlReq = "SHOW TABLES LIKE '".MAIN_DB_PREFIX."rh_admin_compteur';";
 	$ATMdb->Execute($sqlReq);
+
+	if(!empty($ATMdb->Get_line())) {
+		$sqlReq = "DELETE FROM ".MAIN_DB_PREFIX."rh_admin_compteur WHERE 1";
+		$ATMdb->Execute($sqlReq);
+	}
 	
 	$q=new TRH_AdminCompteur;
 	$q->init_db_by_vars($ATMdb);
