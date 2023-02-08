@@ -280,7 +280,7 @@ function round2Virgule($variable){
 	if($variable==0){
 		return '0';
 	}else {
-		return number_format($variable,2,'.','');
+		return number_format(floatval($variable),2,'.','');
 	}
 }
 

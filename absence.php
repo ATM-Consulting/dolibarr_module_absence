@@ -200,14 +200,14 @@ function _liste(&$PDOdb, &$absence) {
 	$sql="SELECT a.rowid as 'ID', IF(ta.isPresence = 0, 'absence', 'presence') as isPresenceCode, a.fk_user, a.date_cre as 'DateCre',a.date_debut , a.date_fin,
 			a.libelle,a.duree, a.etat,a.type, 'Compteur', u.login, u.firstname, u.lastname ";
 
-	if($conf->multicompany->enabled) $sql.=",e.label as entity";
+	if(!empty($conf->multicompany->enabled)) $sql.=",e.label as entity";
 
 	$sql.=",a.avertissement
 			FROM ".MAIN_DB_PREFIX."rh_absence as a
 				LEFT JOIN ".MAIN_DB_PREFIX."user as u ON (u.rowid=a.fk_user)
 				LEFT JOIN ".MAIN_DB_PREFIX."rh_type_absence as ta ON (ta.typeAbsence = a.type) ";
 
-	if($conf->multicompany->enabled) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."entity as e ON (e.rowid = a.entity) ";
+	if(!empty($conf->multicompany->enabled)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."entity as e ON (e.rowid = a.entity) ";
 
 	$sql.= "WHERE a.fk_user=".$user->id;
 
@@ -325,14 +325,14 @@ function _listeAdmin(&$PDOdb, &$absence) {
 		 	a.libelle, ROUND(a.duree ,1) as 'duree', a.fk_user, u.login, u.firstname, u.lastname,
 		  	a.etat ";
 
-	if($conf->multicompany->enabled) $sql.=",e.label as entity";
+	if(!empty($conf->multicompany->enabled)) $sql.=",e.label as entity";
 
 	$sql.= ", a.avertissement,'' as 'action',ta.typeAbsence
 			FROM ".MAIN_DB_PREFIX."rh_absence as a
 				LEFT JOIN ".MAIN_DB_PREFIX."user as u ON (u.rowid=a.fk_user)
 				LEFT JOIN ".MAIN_DB_PREFIX."rh_type_absence as ta ON (ta.typeAbsence = a.type)";
 
-	if($conf->multicompany->enabled) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."entity as e ON (e.rowid = a.entity) ";
+	if(!empty($conf->multicompany->enabled)) $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."entity as e ON (e.rowid = a.entity) ";
 
 	$sql.= "WHERE 1 ";
 			//LIMIT 1000";
@@ -575,6 +575,7 @@ function _listeValidation(&$PDOdb, &$absence) {
 function _fiche(&$PDOdb, &$absence, $mode) {
 	global $db,$user,$conf,$langs;
 	llxHeader('', $langs->trans('AbsenceRequest'));
+    $id = GETPOST('id','int');
 	//echo $_REQUEST['validation'];
 
 	$form=new TFormCore;
@@ -619,7 +620,6 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 		$congeCourant['recup']=$PDOdb->Get_field('acquisRecuperation');
         $congeCourant['congesPrisN']=$PDOdb->Get_field('congesPrisN');
 
-
 		$rttCourant['id']=$PDOdb->Get_field('rowid');
 
 		/*$rttCourant['cumuleReste']=round2Virgule($PDOdb->Get_field('rttCumuleTotal'));
@@ -640,7 +640,7 @@ function _fiche(&$PDOdb, &$absence, $mode) {
     $congePrecTotal=$congePrec['acquisEx']+$congePrec['acquisAnc']+$congePrec['acquisHorsPer']+$congePrec['reportConges'];
     $congePrecReste=$congePrecTotal-$congePrec['congesPris'];
 
-    $congeCourantTotal=$congeCourant['acquisEx']+$congeCourant['acquisAnc']+$congeCourant['acquisHorsPer']+$congeCourant['reportConges'];
+    $congeCourantTotal=$congeCourant['acquisEx']+$congeCourant['acquisAnc']+$congeCourant['acquisHorsPer'];
     $congeCourantReste=$congeCourantTotal-$congeCourant['congesPrisN'];
 
 	$userCourant=new User($db);
@@ -886,7 +886,7 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 				,'anneePrec'=>$form->texte('','anneeNM1',$anneePrec,10,50)
 				,'total'=>$form->texte('','total',$congePrecTotal,10,50)
 				,'reste' => round2Virgule($congePrecReste)
-				,'idUser'=>$_REQUEST['id']
+				,'idUser'=>$id
 			)
 			,'congesCourant'=>array(
 				//texte($pLib,$pName,$pVal,$pTaille,$pTailleMax=0,$plus='',$class="text", $default='')
@@ -895,20 +895,18 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 				,'acquisHorsPer'=>$form->texte('','acquisHorsPeriodeN',$congeCourant['acquisHorsPer'],10,50)
 				,'anneeCourante'=>$form->texte('','anneeN',$anneeCourante,10,50)
 				,'recup'=>$congeCourant['recup']
-				,'idUser'=>$_REQUEST['id']
+				,'idUser'=>$id
 				,'reste'=>round2Virgule($congeCourantReste)
 
 			)
 			,'rttCourant'=>array(
 				//texte($pLib,$pName,$pVal,$pTaille,$pTailleMax=0,$plus='',$class="text", $default='')
-				'acquis'=>$form->texte('','rttAcquis',$rttCourant['acquis'],10,50)
-				,'rowid'=>$form->texte('','rowid',$rttCourant['id'],10,50,'')
+				'rowid'=>$form->texte('','rowid',$rttCourant['id'],10,50,'')
 				//,'id'=>$form->texte('','fk_user',$_REQUEST['id'],10,50,'',$class="text", $default='')
 				,'cumuleReste'=>round2Virgule($rttCourant['cumuleReste'])
 				,'cumuleN1'=>round2Virgule($rttCourant['cumuleN1'])
 				,'nonCumuleReste'=>round2Virgule($rttCourant['nonCumuleReste'])
 				,'nonCumulePrisN1'=>round2Virgule($rttCourant['nonCumulePrisN1'])
-				,'idNum'=>$idRttCourant
 			)
 			,'listUserAlreadyAccepted'=>array(
 				'titre'=>load_fiche_titre($langs->trans('ListUserAlreadyAccepted'),'', 'title.png', 0, '')

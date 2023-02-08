@@ -4,7 +4,7 @@
 	require('./lib/absence.lib.php');
 	
 	
-	if($conf->global->RH_ABSENCE_USE_WORKING_PLANNING){
+	if(!empty($conf->global->RH_ABSENCE_USE_WORKING_PLANNING)){
 		header('location:planningUser.php?mode=auto&jsonp=1');
 	} 
 	
@@ -80,7 +80,7 @@
 		$TabUser[$ATMdb->Get_field('rowid')]=ucwords($ATMdb->Get_field('lastname')).' '.ucfirst(strtolower($ATMdb->Get_field('firstname')));
 	}
 
-	$idUser=$_REQUEST['idUtilisateur']? $_REQUEST['idUtilisateur']:0;
+	$idUser=GETPOST('idUtilisateur','int');
 	
 	$TBS=new TTemplateTBS();
 	print $TBS->render('./tpl/calendrier.tpl.php'
@@ -114,8 +114,7 @@
 				,'refresh' 			=> $langs->trans('Refresh')
 			)
 			,'view'=>array(
-				'mode'=>$mode
-				,'head'=>dol_get_fiche_head(absencePrepareHead($absence, 'absence')  , 'calendrier', $langs->trans('Absence'))
+				'head'=>dol_get_fiche_head(absencePrepareHead($absence, 'absence')  , 'calendrier', $langs->trans('Absence'))
 				,'head3'=>dol_get_fiche_head(absencePrepareHead($absence, 'index')  , 'calendrier', $langs->trans('Absence'))
 				,'titreCalendar'=>load_fiche_titre($langs->trans('AbsencesPresencesDiary'),'', 'title.png', 0, '')
 				,'agendaEnabled'=>0

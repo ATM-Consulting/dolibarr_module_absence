@@ -301,7 +301,7 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
     $totalCongesPrisNM1 = TRH_Absence::getUserPeriodTotalConges($PDOdb, $compteur->fk_user, $dateStartPrisNM1, $dateEndPrisNM1);
     $totalCongesPoseNM1 = TRH_Absence::getUserPeriodTotalConges($PDOdb, $compteur->fk_user, $dateStartPoseNM1, $dateEndPoseNM1);
 
-    $morehtmlref.='<div class="refidno">';
+    $morehtmlref='<div class="refidno">';
     $morehtmlref.= $langs->trans('HolidaysTaken').' : <strong>'.round2Virgule($compteur->congesPrisNM1).'</strong> &nbsp;&nbsp;&nbsp;';
     $morehtmlref.= $langs->trans('RemainingBefore').' '.dol_print_date($compteur->date_congesCloture ).' : <strong>'.round2Virgule($congePrecReste).'</strong>';
     $morehtmlref.='</div>';
@@ -355,14 +355,9 @@ function _fiche(&$PDOdb, &$compteur, $mode) {
 
 			,'rttCourant'=>array(
 				//texte($pLib,$pName,$pVal,$pTaille,$pTailleMax=0,$plus='')
-				'acquis'=>$form->texte('','rttAcquis',round2Virgule($compteur->rttAcquis),10,50,'')
-				,'rowid'=>$form->texte('','rowid',$compteur->getId(),10,50,'')
-				,'mensuel'=>$form->texte('','rttAcquisMensuel',round2Virgule($compteur->rttAcquisMensuel),10,50,'')
-				,'annuelCumule'=>$form->texte('','rttAcquisAnnuelCumule',round2Virgule($compteur->rttAcquisAnnuelCumule),10,50,'')
-				,'annuelNonCumule'=>$form->texte('','rttAcquisAnnuelNonCumule',round2Virgule($compteur->rttAcquisAnnuelNonCumule),10,50,'')
+				'rowid'=>$form->texte('','rowid',$compteur->getId(),10,50,'')
 				,'date_rttCloture'=>(!empty($user->rights->absence->myactions->update_date_cloture)) ? $form->calendrier('', 'date_rttCloture', $compteur->date_rttCloture) : date("d/m/Y", $compteur->date_rttCloture)
 				,'mensuelInit'=>$form->texte('','rttAcquisMensuelInit',round2Virgule($compteur->rttAcquisMensuelInit),10,50,'')
-				,'mensuelTotal'=>$form->texte('','rttAcquisMensuelTotal',round2Virgule($compteur->rttAcquisMensuelTotal),10,50,'')
 				,'annuelCumuleInit'=>$form->texte('','rttAcquisAnnuelCumuleInit',round2Virgule($compteur->rttAcquisAnnuelCumuleInit),10,50,'')
 				,'annuelNonCumuleInit'=>$form->texte('','rttAcquisAnnuelNonCumuleInit',round2Virgule($compteur->rttAcquisAnnuelNonCumuleInit),10,50,'')
 				,'typeAcquisition'=>$form->combo('','rttTypeAcquisition',$compteur->TTypeAcquisition,$compteur->rttTypeAcquisition)
