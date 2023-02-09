@@ -672,7 +672,7 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 
 	$droitAdmin=0;
 
-	if($user->rights->absence->myactions->creerAbsenceCollaborateur){
+	if(!empty($user->rights->absence->myactions->creerAbsenceCollaborateur)){
 		$sql="SELECT DISTINCT rowid, lastname,  firstname, login FROM `".MAIN_DB_PREFIX."user` WHERE statut=1 AND entity IN (0,".$conf->entity.")";
 		$droitsCreation=1;
 		$comboAbsence=2;
@@ -680,7 +680,7 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 		$droitAdmin=1;
 //print "admin";
 //print_r( $typeAbsenceCreable);
-	}else if($user->rights->absence->myactions->creerAbsenceCollaborateurGroupe){
+	}else if(!empty($user->rights->absence->myactions->creerAbsenceCollaborateurGroupe)){
 		$sql=" SELECT DISTINCT u.fk_user,s.rowid, s.lastname,  s.firstname ,s.login
 			FROM `".MAIN_DB_PREFIX."rh_valideur_groupe` as v INNER JOIN ".MAIN_DB_PREFIX."usergroup_user as u ON (v.fk_usergroup=u.fk_usergroup)
 				INNER JOIN ".MAIN_DB_PREFIX."user as s ON (s.rowid=u.fk_user)
@@ -764,11 +764,11 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 
 	$diff=strtotime('+0day',$absence->date_debut)-time();
 	$duree=intval($diff/3600/24);
-
+    $droitSupprimer = 0;
 	if( (int)date('Ymd',$absence->date_debut)> (int) date('Ymd') && $absence->fk_user==$user->id && ($absence->etat!='Validee' || $user->rights->absence->myactions->supprimerMonAbsence)){
 		$droitSupprimer=1;
 	}
-	elseif($user->rights->absence->myactions->creerAbsenceCollaborateur){
+	elseif(!empty($user->rights->absence->myactions->creerAbsenceCollaborateur)){
 		$droitSupprimer=1;
 	}
 
@@ -1017,9 +1017,9 @@ function _fiche(&$PDOdb, &$absence, $mode) {
 				,'date'=>$langs->trans('Date')
 			)
 			,'other' => array(
-				'dontSendMail' => (int)$user->rights->absence->myactions->CanAvoidSendMail
+				'dontSendMail' => !empty($user->rights->absence->myactions->CanAvoidSendMail) ? (int)$user->rights->absence->myactions->CanAvoidSendMail : 0
 				,'dontSendMail_CB' => '<input type="checkbox" name="dontSendMail" id="dontSendMail" value="1" />' // J'utilise pas $form->checkbox1('','dontSendMail', 1) parce que j'ai besoin que la ce soit toujours cochable meme en mode view pour les valideurs
-				,'autoValidatedAbsence' => (int)($form->type_aff == 'edit' &&  $user->rights->absence->myactions->CanDeclareAbsenceAutoValidated)
+				,'autoValidatedAbsence' => (int)($form->type_aff == 'edit' &&  !empty($user->rights->absence->myactions->CanDeclareAbsenceAutoValidated))
 				,'autoValidatedAbsenceChecked'=> ( !empty($user->rights->absence->myactions->voirToutesAbsencesListe) ? ' checked="checked" ':'')
 				,'token'=>function_exists('newToken') ? newToken() : $_SESSION['newtoken']
 			)
@@ -1103,6 +1103,7 @@ function _getRowUserAlreadyAccepted(&$PDOdb, &$db, &$absence) {
 			$sql = 'SELECT lastname, firstname  FROM '.MAIN_DB_PREFIX.'user WHERE rowid = '.$row->fk_user;
 			$resql = $db->query($sql);
 			if($resql && $db->num_rows($resql)) {
+                if(empty($TRes[0])) $TRes[0] = array('html'=>'');
 				while($u = $db->fetch_object($resql)) $TRes[0]['html'] .= '<tr><td>'.date('d/m/Y', strtotime($row->date_cre)).'</td><td>'.trim($u->lastname.' '.$u->firstname).'</td></tr>';
 			}
 		}

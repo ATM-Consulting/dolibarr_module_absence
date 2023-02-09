@@ -727,7 +727,7 @@ class TRH_Absence extends TObjetStd {
 		$dureeAbsenceRecevable=$this->dureeAbsenceRecevable($PDOdb);
 
 
-		if($dureeAbsenceRecevable==0 || ($conf->global->ABSENCE_GREATER_THAN_CONGES_RESTANTS_FORBIDDEN && $dureeAbsenceCourante > $conges_nm1_restants)){
+		if($dureeAbsenceRecevable==0 || (!empty($conf->global->ABSENCE_GREATER_THAN_CONGES_RESTANTS_FORBIDDEN) && ($dureeAbsenceCourante > $conges_nm1_restants))){
 			return 0;
 		}
 
@@ -749,7 +749,7 @@ class TRH_Absence extends TObjetStd {
 		}
 		else if($this->type=="conges"||$this->type=="cppartiel"){	//autre que RTT : décompte les congés
 			$compteur->add($PDOdb, $this->type, array($this->congesPrisNM1,  $this->congesPrisN), 'Prise de congé');
-
+			if(empty($this->congesResteNM1)) $this->congesResteNM1 = 0;
 			$this->congesResteNM1=$this->congesResteNM1-$dureeAbsenceCourante;
 
 		}
@@ -1105,7 +1105,7 @@ class TRH_Absence extends TObjetStd {
 
 				$duree+=$dureeJour;
 				$this->dureeContigueWhitoutJNT+=$dureeJour;
-
+				if(empty($this->TDureeAbsenceUser)) $this->TDureeAbsenceUser = array(date('Y', $t_current) => array(date('m', $t_current) => 0));
 				$this->TDureeAbsenceUser[date('Y', $t_current)][date('m', $t_current)] += $dureeJour;
 
 			}

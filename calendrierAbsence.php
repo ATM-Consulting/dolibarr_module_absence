@@ -97,7 +97,7 @@
 				//,'TUser'=>$user->rights->absence->myactions->voirToutesAbsences?$form->combo('', 'rowid', $absence->TUser,  $absence->TUser):$form->combo('', 'rowid',$TabUser,  $TabUser)
 				,'TUser'			=>$form->combo('', 'idUtilisateur', $TabUser,  $idUser)
 				,'TTypeAbsence'		=>$form->combo('', 'typeAbsence', $TTypeAbsence,  $typeAbsence)
-				,'droits'			=>$user->rights->absence->myactions->voirToutesAbsences ? 1 : 0
+				,'droits'			=>!empty($user->rights->absence->myactions->voirToutesAbsences) ? 1 : 0
 				,'btValider'		=>$form->btsubmit($langs->trans('Submit'), 'valider')
 				//,'idAfficher'=>$_REQUEST['rowid']? $_REQUEST['rowid']:0
 				,'confirm_delete' 	=> $langs->trans('ConfirmDeleteEvent')

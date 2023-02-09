@@ -27,10 +27,10 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 
 		if(!empty($_COOKIE['TRHPlanning']) ){
 
-			$idGroupeRecherche=$_COOKIE['TRHPlanning']['groupe'];
-			$idGroupeRecherche2=$_COOKIE['TRHPlanning']['groupe2'];
-			$idGroupeRecherche3=$_COOKIE['TRHPlanning']['groupe3'];
-			$idUserRecherche = $_COOKIE['TRHPlanning']['fk_user'];
+			$idGroupeRecherche=!empty($_COOKIE['TRHPlanning']['groupe']) ? $_COOKIE['TRHPlanning']['groupe'] : 0;
+			$idGroupeRecherche2=!empty($_COOKIE['TRHPlanning']['groupe2']) ? $_COOKIE['TRHPlanning']['groupe2'] : 0;
+			$idGroupeRecherche3=!empty($_COOKIE['TRHPlanning']['groupe3']) ? $_COOKIE['TRHPlanning']['groupe3'] : 0;
+			$idUserRecherche = !empty($_COOKIE['TRHPlanning']['fk_user']) ? $_COOKIE['TRHPlanning']['fk_user'] : 0;
 
 			if(!empty($_COOKIE['TRHPlanning']['date_debut_search'])) {
 				$date_debut=$_COOKIE['TRHPlanning']['date_debut_search'];
@@ -105,7 +105,7 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 	$TGroupe = $TUser = array();
 
 	// ConsultCollabSchedule = Visualiser l'emploi du temps des collaborateurs
-	if($user->rights->absence->myactions->voirTousEdt) {
+	if(!empty($user->rights->absence->myactions->voirTousEdt)) {
 
 		$TGroupe[0]  = $langs->trans('AllThis');
 		$sqlReq="SELECT rowid, nom FROM ".MAIN_DB_PREFIX."usergroup WHERE entity IN (0,".$conf->entity.")";
@@ -126,7 +126,7 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 		$sql.=" ORDER BY u.lastname, u.firstname";
 	}
 	// ConsultGroupCollabAbsencesPresencesOnSchedule = Voir les absences ou présences des collaborateurs de mes groupes sur le calendrier
-	elseif($user->rights->absence->myactions->voirGroupesAbsences)  {
+	elseif(!empty($user->rights->absence->myactions->voirGroupesAbsences))  {
 
 		$TGroupe[99999]  = $langs->trans('None');
 
@@ -189,7 +189,7 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 				'id'=>$user->id
 				,'nom'=>$user->lastname
 				,'prenom'=>$user->firstname
-				,'droitRecherche'=>$user->rights->absence->myactions->rechercherAbsence?1:0
+				,'droitRecherche'=>!empty($user->rights->absence->myactions->rechercherAbsence)?1:0
 			)
 			,'view'=>array(
 				'mode'=>$mode

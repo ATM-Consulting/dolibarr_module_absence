@@ -380,7 +380,7 @@ function mailConges(&$absence,$presence=false, $TPieceJointe = array()){
 			)
 		);
 		//echo $message;exit;
-		if($conf->global->ABSENCE_ALERT_OTHER_VALIDEUR) {
+		if(!empty($conf->global->ABSENCE_ALERT_OTHER_VALIDEUR)) {
 			dol_include_once('/valideur/class/valideur.class.php');
 			$PDOdb=new TPDOdb;
 			$TValideur = TRH_valideur_groupe::getUserValideur($PDOdb, $user, $absence, 'Conges');
@@ -479,7 +479,7 @@ function mailCongesValideur(&$PDOdb, &$absence,$presence=false, $TPieceJointe = 
 	dol_include_once('/valideur/class/valideur.class.php');
 	$TValideur = TRH_valideur_groupe::getUserValideur($PDOdb, $user, $absence, 'Conges');
 
-	if($conf->global->RH_ABSENCE_ALERT_NONJUSTIF_SUPERIOR && $absence->code=='nonjustifiee') {
+	if(!empty($conf->global->RH_ABSENCE_ALERT_NONJUSTIF_SUPERIOR) && $absence->code=='nonjustifiee') {
 		$sql="SELECT fk_user FROM ".MAIN_DB_PREFIX."user WHERE rowid=".(int)$absence->fk_user;
 		$PDOdb->Execute($sql);
 		$PDOdb->Get_line();
@@ -487,7 +487,7 @@ function mailCongesValideur(&$PDOdb, &$absence,$presence=false, $TPieceJointe = 
 		if(!empty($fk_sup) && !in_array($conf->global->RH_ABSENCE_ALERT_NONJUSTIF_USER, $TValideur)) $TValideur[] = $fk_sup;
 	}
 
-	if($conf->global->RH_ABSENCE_ALERT_NONJUSTIF_USER && $absence->code=='nonjustifiee') {
+	if(!empty($conf->global->RH_ABSENCE_ALERT_NONJUSTIF_USER) && $absence->code=='nonjustifiee') {
 		if(!in_array($conf->global->RH_ABSENCE_ALERT_NONJUSTIF_USER, $TValideur))  $TValideur[] = $conf->global->RH_ABSENCE_ALERT_NONJUSTIF_USER;
 	}
 
@@ -681,7 +681,7 @@ function _recap_abs(&$PDOdb, $idGroupeRecherche, $idUserRecherche, $date_debut, 
 	$date_debut = date('Y-m-d', Tools::get_time($date_debut));
 	$date_fin = date('Y-m-d', Tools::get_time($date_fin));
 
-	if(!$user->rights->absence->myactions->creerAbsenceCollaborateur) { //Dans ce cas l'utilisateur ne doit pouvoir voir que SES compteurs.
+	if(empty($user->rights->absence->myactions->creerAbsenceCollaborateur)) { //Dans ce cas l'utilisateur ne doit pouvoir voir que SES compteurs.
 		$idGroupeRecherche = 0;
 		$idUserRecherche = $user->id;
 	}
@@ -934,7 +934,7 @@ function _planning(&$PDOdb, &$absence, $idGroupeRecherche, $idUserRecherche, $da
 
 			if (empty($TAbsencePresence))
 			{
-				if( isset($_REQUEST['no-link']) || (!$user->rights->absence->myactions->creerAbsenceCollaborateur && !$isValideur) ) {
+				if( isset($_REQUEST['no-link']) || (empty($user->rights->absence->myactions->creerAbsenceCollaborateur) && !$isValideur) ) {
 					$linkPop='&nbsp;';
 					if ($user->rights->absence->myactions->creerAbsence && $user->id == $idUser)
 						$linkPop = '<a title="'.$langs->trans('addAbsenceUser').'" href="javascript:popAddAbsence(\''.$std->get_date('date_jour','Y-m-d').'\', '.$idUser.');" class="no-print">'.$labelJour.'</a>';
@@ -1188,7 +1188,7 @@ function dol_absence_banner_tab($object, $paramid, $morehtml='', $shownav=1, $fi
 
 
     //$morehtmlstatus.=$langs->trans("Status").' ('.$langs->trans("Buy").') ';
-    if (! empty($conf->use_javascript_ajax) && $user->rights->produit->creer && ! empty($conf->global->MAIN_DIRECT_STATUS_UPDATE)) {
+    if (! empty($conf->use_javascript_ajax) && !empty($user->rights->produit->creer) && ! empty($conf->global->MAIN_DIRECT_STATUS_UPDATE)) {
         $morehtmlstatus.=ajax_object_onoff($object, 'status_buy', 'tobuy', 'ProductStatusOnBuy', 'ProductStatusNotOnBuy');
     } else {
         $morehtmlstatus.='<span class="statusrefbuy">'.$object->getLibStatut(5,1).'</span>';
@@ -1311,7 +1311,7 @@ function saveAbsence(TPDOdb &$PDOdb, TRH_Absence &$absence)
 	}
 
 	// Quand l'input est vide $_FILES n'est pas vide ce qui crée une erreur
-	if (!empty($_FILES['userfile']['name']) && count($_FILES['userfile']['name']) == 1 && empty($_FILES['userfile']['name'][0]))
+	if (!empty($_FILES['userfile']['name']) && count($_FILES['userfile']['name']) == 1 && empty($_FILES['userfile']['name'][0]) && floatval(DOL_VERSION) < 17)
 	{
 		unset($_FILES['userfile']['name']);
 	}
