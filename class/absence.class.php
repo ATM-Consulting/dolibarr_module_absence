@@ -727,7 +727,7 @@ class TRH_Absence extends TObjetStd {
 		$dureeAbsenceRecevable=$this->dureeAbsenceRecevable($PDOdb);
 
 
-		if($dureeAbsenceRecevable==0 || ($conf->global->ABSENCE_GREATER_THAN_CONGES_RESTANTS_FORBIDDEN && $dureeAbsenceCourante > $conges_nm1_restants)){
+		if($dureeAbsenceRecevable==0 || (!empty($conf->global->ABSENCE_GREATER_THAN_CONGES_RESTANTS_FORBIDDEN) && ($dureeAbsenceCourante > $conges_nm1_restants))){
 			return 0;
 		}
 
@@ -749,7 +749,7 @@ class TRH_Absence extends TObjetStd {
 		}
 		else if($this->type=="conges"||$this->type=="cppartiel"){	//autre que RTT : décompte les congés
 			$compteur->add($PDOdb, $this->type, array($this->congesPrisNM1,  $this->congesPrisN), 'Prise de congé');
-
+			if(empty($this->congesResteNM1)) $this->congesResteNM1 = 0;
 			$this->congesResteNM1=$this->congesResteNM1-$dureeAbsenceCourante;
 
 		}
@@ -1105,7 +1105,7 @@ class TRH_Absence extends TObjetStd {
 
 				$duree+=$dureeJour;
 				$this->dureeContigueWhitoutJNT+=$dureeJour;
-
+				if(empty($this->TDureeAbsenceUser)) $this->TDureeAbsenceUser = array(date('Y', $t_current) => array(date('m', $t_current) => 0));
 				$this->TDureeAbsenceUser[date('Y', $t_current)][date('m', $t_current)] += $dureeJour;
 
 			}
@@ -3010,7 +3010,7 @@ END:VCALENDAR
 			$TabLogin[$PDOdb->Get_field('rowid')]=$PDOdb->Get_field('firstname')." ".$PDOdb->Get_field('lastname');
 		}
 
-		if($conf->global->RH_PLANNING_SEARCH_MODE == 'INTERSECTION') {
+		if(!empty($conf->global->RH_PLANNING_SEARCH_MODE) && $conf->global->RH_PLANNING_SEARCH_MODE == 'INTERSECTION') {
 		// élimination des users non présent dans tous les groupes. AA peu opti mais je n'ai guère le choix si je veux pas refondre toutes la requête
 
 			foreach($TabLogin as $idUser=>$row) {
@@ -3418,7 +3418,7 @@ class TRH_EmploiTemps extends TObjetStd {
 		if(empty($TRHCacheUserDateEntree[$id_user])) {
 			$u =new User($db);
 			$u->fetch($id_user);
-
+			if(empty($u->array_options['options_DDA'])) $u->array_options['options_DDA'] = '';
 			$TRHCacheUserDateEntree[$id_user] = $u->array_options['options_DDA'];
 
 			if((float) DOL_VERSION >= 5)

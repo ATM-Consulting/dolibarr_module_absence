@@ -83,7 +83,7 @@ class InterfaceAbsenceWorkflow extends DolibarrTriggers
         global $db,$conf,$langs;
 
 		if ($action === 'USER_CREATE' || $action === 'USER_MODIFY') {
-			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->rowid);
+			dol_syslog("Trigger '".$this->name."' for action '$action' launched by ".__FILE__.". id=".$object->id);
 
 
 			if($action === 'USER_CREATE' && !empty($conf->global->ABSENCE_USER_CREATE_TR_ON)) {

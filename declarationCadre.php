@@ -78,7 +78,7 @@ global $db,$langs,$conf;
 		$t_debut = strtotime(__get('year').'-'.__get('month').'-01');
 		
 		$TStatPlanning = TRH_Absence::getPlanning($ATMdb, 0, $fk_user,  date('Y-m-d', $t_debut) , date('Y-m-t', $t_debut));
-		list($dummy,$TStat) = each($TStatPlanning);
+        $TStat = current($TStatPlanning);
 
 		?>
 		<script type="text/javascript">
