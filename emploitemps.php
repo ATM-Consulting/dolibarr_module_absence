@@ -199,7 +199,7 @@
 	}
 	else {
 		if($user->rights->absence->myactions->voirTousEdt){
-			$emploiTemps->loadByuser($PDOdb, $_REQUEST['fk_user']);
+			$emploiTemps->loadByuser($PDOdb, GETPOST('fk_user','int'));
 			_liste($PDOdb, $emploiTemps);
 		}else{
 
@@ -290,11 +290,12 @@ global $db;
 
 function _fiche(&$PDOdb, &$emploiTemps, $mode) {
 	global $db, $user,$idUserCompt, $idComptEnCours,$conf, $langs,$mysoc;
+    $id = GETPOST('id', 'int');
 	llxHeader('', $langs->trans('Schedule'));
-	$emploiTemps->load($PDOdb, $_REQUEST['id']);
+	$emploiTemps->load($PDOdb, $id);
 	$form=new TFormCore($_SERVER['PHP_SELF'],'form1','POST');
 	$form->Set_typeaff($mode);
-	echo $form->hidden('id', $_REQUEST['id']);
+	echo $form->hidden('id', $id);
 	echo $form->hidden('action', 'save');
 	echo $form->hidden('fk_user', $emploiTemps->fk_user);
 
@@ -319,7 +320,7 @@ function _fiche(&$PDOdb, &$emploiTemps, $mode) {
 		foreach(array('dam','fam','dpm','fpm') as $pm) {
 			$pm2 = strpos($pm ,'pm') !==false ? 'pm' : 'am';
 			$THoraire[$jour.'_heure'.$pm]=($emploiTemps->{$jour.$pm2} || $mode =='edit')  ?
-				$form->timepicker('','date_'.$jour.'_heure'.$pm, empty($emploiTemps->{$jour.$pm2})?'':date('H:i',$emploiTemps->{'date_'.$jour.'_heure'.$pm}) ,5,5)
+				$form->timepicker('','date_'.$jour.'_heure'.$pm, empty($emploiTemps->{$jour.$pm2})?'':date('H:i',$emploiTemps->{'date_'.$jour.'_heure'.$pm}) ,5,5,'','text','H:i','00:00', $maxTime = '24:00')
 				: ' - ';
 		}
 	}
@@ -481,7 +482,8 @@ function printModalJsForm_copynew($PDOdb,$emploiTemps){
     $date_debut = time();
     $date_fin = time() + 604800;
     if($row) {
-        $date_debut = strtotime($row->date_fin);
+
+        if(!empty($row->date_fin)) $date_debut = strtotime($row->date_fin);
         $date_fin = $date_debut + 604800;
         if($date_fin < time ())
         {

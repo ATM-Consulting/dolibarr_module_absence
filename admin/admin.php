@@ -32,7 +32,7 @@ dol_include_once('/core/class/html.form.class.php');
 // Change this following line to use the correct relative path from htdocs (do not remove DOL_DOCUMENT_ROOT)
 
 // Protection if external user
-if ($user->societe_id > 0)
+if (!empty($user->societe_id) && $user->societe_id > 0)
 {
 	accessforbidden();
 }
@@ -66,7 +66,7 @@ if($action=='save') {
 
 
 
-llxHeader('', $langs->trans('FundManagementAbout'),'');
+llxHeader('', $langs->trans('AbsenceManagement'),'');
 
 $linkback='<a href="'.DOL_URL_ROOT.'/admin/modules.php">'.$langs->trans("BackToModuleList").'</a>';
 print_fiche_titre($langs->trans('AbsenceManagement'), $linkback, 'setup');
@@ -98,7 +98,7 @@ function showParameters(&$form, &$doliform) {
 		,'RH_N_LABEL'
 	);
 
-	?><form action="<?php echo $_SERVER['PHP_SELF'] ?>" name="load-<?php echo $typeDoc ?>" method="POST" enctype="multipart/form-data">
+	?><form action="<?php echo $_SERVER['PHP_SELF'] ?>" name="load-setup-form" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="action" value="save" />
 		<input type="hidden" name="token" value="'<?php $newToken?>'">
 	<table width="100%" class="noborder" style="background-color: #fff;">
@@ -108,7 +108,7 @@ function showParameters(&$form, &$doliform) {
 		<?php
 
 		foreach($TConst as $key) {
-
+        if(empty($conf->global->$key)) $conf->global->$key = '';
 		?><tr>
 			<td><?php echo $langs->trans($key) ?></td><td><?php echo $form->texte('', 'TConst['.$key.']', $conf->global->$key,50,255)  ?></td>
 		</tr><?php
@@ -242,6 +242,7 @@ function showParameters(&$form, &$doliform) {
 				.$doliform->textwithtooltip('Banane', '=Export std Cegid', 2, 1, '<img src="'.dol_buildpath('/theme/eldy/img/info.png', 1).'" />');
 		print '</td>';
 		print '<td>';
+        if(empty($conf->global->RH_EXPORT_ABSENCE_DECOUPE_USED_MAPPING)) $conf->global->RH_EXPORT_ABSENCE_DECOUPE_USED_MAPPING = '';
 		print $doliform->selectarray('TConst[RH_EXPORT_ABSENCE_DECOUPE_USED_MAPPING]', array(''=>'', 'CPRO'=>"Kiwi", 'VALRIM'=>'Banane'), $conf->global->RH_EXPORT_ABSENCE_DECOUPE_USED_MAPPING);
 		if($conf->global->RH_EXPORT_ABSENCE_DECOUPE_USED_MAPPING === 'VALRIM') {
 			print $form->texte('', 'TConst[RH_EXPORT_ABSENCE_DECOUPE_USED_NUM_DOSSIER]', $conf->global->RH_EXPORT_ABSENCE_DECOUPE_USED_NUM_DOSSIER,6,255);
@@ -254,7 +255,7 @@ function showParameters(&$form, &$doliform) {
 		print $langs->trans('absenceRecupAcuisitionRules');
 		print '</td>';
 		print '<td>';
-		print $doliform->selectarray('TConst[RH_RECUP_RULES]', array(''=>$langs->trans('None'), 'DECLARE'=>$langs->trans('recupRulesDeclare'), 'AUTO'=>$langs->trans('recupRulesAuto')), $conf->global->RH_RECUP_RULES);
+		print $doliform->selectarray('TConst[RH_RECUP_RULES]', array(''=>$langs->trans('None'), 'DECLARE'=>$langs->trans('recupRulesDeclare'), 'AUTO'=>$langs->trans('recupRulesAuto')), (!empty($conf->global->RH_RECUP_RULES) ? $conf->global->RH_RECUP_RULES : ''));
 		print '</td>';
 		print '</tr>';
 

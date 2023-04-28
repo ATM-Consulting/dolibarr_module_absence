@@ -179,8 +179,6 @@ function _fiche(&$PDOdb, &$absence, &$form, $mode) {
                 'CreatedThe' => $langs->trans('CreatedThe'),
                 'ValidatedThe' => $langs->trans('ValidatedThe'),
                 'HolidaysPaid' => $langs->trans('HolidaysPaid'),
-                'CumulatedDayOff' => utf8_decode($TTypeAbsence['rttcumule']),
-                'NonCumulatedDayOff' => utf8_decode($TTypeAbsence['rttnoncumule']),
                 'Register' => $langs->trans('Register'),
                 'ConfirmAcceptAbsenceRequest' => addslashes( $langs->transnoentitiesnoconv('ConfirmAcceptAbsenceRequest') ),
                 'Accept' => $langs->trans('Accept'),

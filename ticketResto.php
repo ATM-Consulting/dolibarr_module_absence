@@ -128,7 +128,7 @@ function _archive_ticket_resto(&$ATMdb, $Tab) {
 
 	foreach($Tab as $fk_user=>$row) {
 		$t=new TRH_TicketResto;
-
+        if(empty($row['date_distribution'])) $row['date_distribution'] = '';
 		$t->loadByUserDate($ATMdb, $fk_user, date('Y-m-d', Tools::get_time( $row['date_distribution'] )) );
 
 		$t->set_values($row);
@@ -160,18 +160,16 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 	*/
 	$date_debut=time();
 	$date_fin=strtotime('+7day');
-	$idGroupeRecherche=0;
 	$idUserRecherche=0;
 
-	if(isset($_REQUEST['groupe'])) $idGroupeRecherche=$_REQUEST['idGroupeRecherche'];
 	if(isset($_REQUEST['date_debut'])) $date_debut=$_REQUEST['date_debut'];
 	if(isset($_REQUEST['date_fin'])) $date_fin=$_REQUEST['date_fin'];
 	if(isset($_REQUEST['fk_user'])) $idUserRecherche=$_REQUEST['fk_user'];
 
-	$idGroupeRecherche=$_REQUEST['groupe'];
+	$idGroupeRecherche=GETPOST('groupe', 'int');
 
 
-	if($idGroupeRecherche!=0){	//	on recherche le nom du groupe
+	if(!empty($idGroupeRecherche)){	//	on recherche le nom du groupe
 		$sql="SELECT nom FROM ".MAIN_DB_PREFIX."usergroup
 		WHERE rowid =".$idGroupeRecherche;
 		$ATMdb->Execute($sql);
@@ -224,9 +222,9 @@ function _planningResult(&$ATMdb, &$absence, $mode) {
 				,'titrePlanning'=>load_fiche_titre($langs->trans('CollabsSchedule'),'', 'title.png', 0, '')
 			)
 			,'userCourant'=>array(
-				'id'=>$fuser->id
-				,'nom'=>$fuser->lastname
-				,'prenom'=>$fuser->firstname
+				'id'=>$user->id
+				,'nom'=>$user->lastname
+				,'prenom'=>$user->firstname
 				,'droitRecherche'=>$user->rights->absence->myactions->rechercherAbsence?1:0
 			)
 			,'view'=>array(
@@ -378,13 +376,13 @@ function _ticket(&$ATMdb) {
 	}
 	else{
 
-		$rs =  $conf->global->MAIN_INFO_SOCIETE_NOM;
-		$address =  $conf->global->MAIN_INFO_SOCIETE_ADDRESS;
-		$cp = $conf->global->MAIN_INFO_SOCIETE_ZIP;
-		$ville = $conf->global->MAIN_INFO_SOCIETE_TOWN;
+		$rs =  !empty($conf->global->MAIN_INFO_SOCIETE_NOM) ? $conf->global->MAIN_INFO_SOCIETE_NOM : '';
+		$address =  !empty($conf->global->MAIN_INFO_SOCIETE_ADDRESS) ? $conf->global->MAIN_INFO_SOCIETE_ADDRESS : '';
+		$cp = !empty($conf->global->MAIN_INFO_SOCIETE_ZIP) ? $conf->global->MAIN_INFO_SOCIETE_ZIP : '';
+		$ville = !empty($conf->global->MAIN_INFO_SOCIETE_TOWN) ? $conf->global->MAIN_INFO_SOCIETE_TOWN : '';
 
 		$code_client='';
-		$code_fact = $conf->global->DYNAMICRH_TR_CODEFACT;
+		$code_fact = !empty($conf->global->DYNAMICRH_TR_CODEFACT) ? $conf->global->DYNAMICRH_TR_CODEFACT : '';
 	}
 
 
@@ -443,7 +441,7 @@ function _ticket(&$ATMdb) {
 			.'<a href="?action=HISTORY&fk_user='.$idUser.'">'.img_picto($langs->trans('SeeUserPreviousSendings'), 'history.png').'</a>';
 		?></td><?php
 
-		if($u->array_options['options_ticketresto_ok']==1) {
+		if(!empty($u->array_options['options_ticketresto_ok']) && $u->array_options['options_ticketresto_ok']==1) {
 
 			if(!empty($u->array_options['options_ticketresto_pointlivraison'])) $pointlivraison = $u->array_options['options_ticketresto_pointlivraison'];
 
