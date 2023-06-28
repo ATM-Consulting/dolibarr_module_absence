@@ -28,7 +28,7 @@
 		
 		$arraysize=count($TRecap);
 		
-		print "Collaborateur;Type Absence;Intitule Absence;Duree en Jours;Duree en Heures;Date de debut; Date de fin;\r\n";
+		print "Collaborateur;Type Absence;Intitule Absence;Duree en Jours;Duree en Heures;Date de debut; Date de fin;Email;Matricule;\r\n";
 		
 		for($k=0;$k<$arraysize;$k++){
 			
@@ -39,7 +39,9 @@
 			print $TRecap[$k]['dureeJour'].";";
 			print $TRecap[$k]['dureeHeure'].";";
 			print $TRecap[$k]['date_debut'].";";
-			print $TRecap[$k]['date_fin'].";\r\n";
+			print $TRecap[$k]['date_fin'].";";
+			print $TRecap[$k]['email'].";";
+			print $TRecap[$k]['matricule'].";\r\n";
 		}
 		
 		exit;
@@ -363,6 +365,8 @@ function _get_stat_recap(&$PDOdb, $TType, $date_debut, $date_fin, $fk_usergroup,
 					,'date_fin'=>$date_fin
 					,'dureeJour'=>$dureeJour
 					,'dureeHeure'=>$dureeHeure
+					,'email'=>$userAbsence->email
+					,'matricule'=>$userAbsence->array_options['options_matricule_paye']
 				);
 			}
 
