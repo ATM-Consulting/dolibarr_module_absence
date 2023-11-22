@@ -75,7 +75,7 @@ if ($object->id > 0)
 	dol_fiche_head($head, 'document', $langs->trans('Absence'), -1, 'document');
 
 	// Construit liste des fichiers
-	$filearray=dol_dir_list($upload_dir,"files",0,'','(\.meta|_preview.*\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
+	$filearray=dol_dir_list($upload_dir,"all",0,'','(\.meta|_preview.*\.png)$',$sortfield,(strtolower($sortorder)=='desc'?SORT_DESC:SORT_ASC),1);
 	$totalsize=0;
 	foreach($filearray as $key => $file)
 	{
@@ -100,8 +100,9 @@ if ($object->id > 0)
 	$modulepart = 'absence';
 //    var_dump($user->rights->absence);exit;
 	$permission = 1;
-	$permtoedit = 0;
+	$permtoedit = 1;
 	$param = '&id=' . $object->id;
+	$relativepathwithnofile =  $object->id . '/' ;
 	include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 }
 else
